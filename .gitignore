@@ -1,1 +1,5 @@
 *.o
+# shared object
+*.so  
+# static library
+*.a
