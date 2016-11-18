@@ -1,4 +1,8 @@
 # apriltag2
+
+**I am not the author of this algorithm. I am just trying to use it. 
+My goal is to use it for a group of quadrotor UAVs equipped with onboard cameras (flea FL3-U3-32S2C).**
+
 This repository is coming from the folder apriltag-2016-10-21. I downloaded it here:
 https://april.eecs.umich.edu/software/apriltag.html
 
