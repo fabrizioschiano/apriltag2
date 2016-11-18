@@ -98,3 +98,7 @@ a deep copy. Simply create an image_u8_t header for the cv::Mat data buffer:
         .buf = img.data
     };
 
+IROS 2016 PAPER
+==================
+For more details about the algorithm look here:
+https://april.eecs.umich.edu/media/pdfs/wang2016iros.pdf
