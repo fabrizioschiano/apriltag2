@@ -6,9 +6,10 @@ AR = ar
 CFLAGS = -std=gnu99 -fPIC -Wall -Wno-unused-parameter -Wno-unused-function -I. -O4
 
 APRILTAG_SRCS := $(shell ls *.c common/*.c)
-APRILTAG_HEADERS := $(shell ls *.h common/*.h)
+APRILTAG_HEADERS := $(shell ls *.h common/*.h /usr/include/flycapture/*.h)
 APRILTAG_OBJS := $(APRILTAG_SRCS:%.c=%.o)
 TARGETS := libapriltag.a libapriltag.so
+# LIBS := -Lusr/include/flycapture
 
 .PHONY: all
 all: $(TARGETS)
