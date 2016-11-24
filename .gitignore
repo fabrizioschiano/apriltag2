@@ -1,3 +1,8 @@
+# Specific files ignored
+###################
+example/opencvDemo
+
+
 # Compiled source #
 ###################
 *.com
