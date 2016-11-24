@@ -1,7 +1,7 @@
 # Specific files ignored
 ###################
 example/opencvDemo
-
+example/apriltag_demo
 
 # Compiled source #
 ###################
