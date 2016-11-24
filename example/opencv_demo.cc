@@ -33,8 +33,6 @@ either expressed or implied, of the FreeBSD Project.
  */
 
 
-
-
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
@@ -51,9 +49,6 @@ either expressed or implied, of the FreeBSD Project.
 #include "tag25h9.h"
 #include "tag25h7.h"
 #include "tag16h5.h"
-#include "common/getopt.h"
-#include "common/homography.h"
-
 
 using namespace std;    
 using namespace cv;
@@ -245,9 +240,22 @@ int main(int argc, char *argv[])
 				stringstream ss;
 				ss << det->id;
 				//            cout << det->H<<endl;
-
-				//            matd_t *matd = matd_create(3,3);
-				//            matd = homography_to_pose(det->H,1.0,2.0,3.0,4.0);
+//				*det->H H[0][]
+				cout << "-------------" <<endl;
+				cout << "det->H->data" <<endl;
+				for (int j = 0; j < det->H->ncols; ++j) {
+					cout << "["<<det->H->data[j+2*j]<<","<< det->H->data[(j+1)+2*j] << ","<< det->H->data[(j+2)+2*j]<<"]" << endl;
+				}
+				cout << "-------------" <<endl;
+				cout << det->H->data[0]<<endl;
+				cout << det->H->ncols  <<endl;
+				cout << det->H->nrows  <<endl;
+//				cout << det->H  <<endl;
+				//matd_t *matd = matd_create(3,3);
+				matd_t * ciao = new matd_t;
+				double camera_matrix [9] = {687.216761, 0.000000, 1111.575057, 0.000000, 673.787664, 747.109306, 0.000000, 0.000000, 1.000000};
+//				int intero = homography_to_pose(det->H,camera_matrix[1],camera_matrix[5],camera_matrix[3],camera_matrix[6])->ncols;
+//				cout << doppio << endl;
 				// This is the text which is put on the image
 				String text = ss.str();
 				int fontface = FONT_HERSHEY_SCRIPT_SIMPLEX;
