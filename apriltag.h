@@ -46,6 +46,7 @@ extern "C" {
 #include "common/zarray.h"
 #include "common/workerpool.h"
 #include "common/timeprofile.h"
+#include "common/homography.h"
 #include <pthread.h>
 
 #define APRILTAG_TASKS_PER_THREAD_TARGET 10
