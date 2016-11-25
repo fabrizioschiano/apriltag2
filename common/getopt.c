@@ -72,7 +72,8 @@ struct getopt
 
 getopt_t *getopt_create()
 {
-    getopt_t *gopt = (getopt_t*) calloc(1, sizeof(getopt_t));
+	printf("\nInside getopt_create function\n");
+	getopt_t *gopt = (getopt_t*) calloc(1, sizeof(getopt_t));
 
     gopt->lopts     = zhash_create(sizeof(char*), sizeof(getopt_option_t*), zhash_str_hash, zhash_str_equals);
     gopt->sopts     = zhash_create(sizeof(char*), sizeof(getopt_option_t*), zhash_str_hash, zhash_str_equals);

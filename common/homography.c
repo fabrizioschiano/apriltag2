@@ -39,6 +39,7 @@ either expressed or implied, of the FreeBSD Project.
 #include "zarray.h"
 #include "homography.h"
 
+
 static inline float sq(float v)
 {
     return v*v;
@@ -48,7 +49,9 @@ static inline float sq(float v)
 // and y concatenated. We will compute a homography such that y = Hx
 matd_t *homography_compute(zarray_t *correspondences, int flags)
 {
-    // compute centroids of both sets of points (yields a better
+
+	printf("In homography compute\n");
+	// compute centroids of both sets of points (yields a better
     // conditioned information matrix)
     double x_cx = 0, x_cy = 0;
     double y_cx = 0, y_cy = 0;

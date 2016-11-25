@@ -299,6 +299,7 @@ void apriltag_detector_clear_families(apriltag_detector_t *td)
 
 apriltag_detector_t *apriltag_detector_create()
 {
+    printf("\nInside the apriltag_detector function\n");
     apriltag_detector_t *td = (apriltag_detector_t*) calloc(1, sizeof(apriltag_detector_t));
 
     td->nthreads = 1;
