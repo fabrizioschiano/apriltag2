@@ -98,7 +98,7 @@
 		// Get the camera info and print it out
 		error = camera.GetCameraInfo( &camInfo );
 
-//		cout << "GetCameraInfo:" << error << endl;
+		cout << "GetCameraInfo:" << error << endl;
 		if ( error != PGRERROR_OK )
 		{
 			cout << "Failed to get camera info from camera" << endl;
