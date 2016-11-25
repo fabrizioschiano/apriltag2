@@ -87,7 +87,7 @@
 		CameraInfo camInfo;
 
 		// Connect the camera
-		error = camera.Connect( 0 );
+		error = camera.Connect( 0 ); // Probably I need to change here if I have 2 cameras and I want to connect to a specific one.
 		if ( error != PGRERROR_OK )
 		{
 			cout << "Failed to connect to camera" << endl;
@@ -97,6 +97,8 @@
 
 		// Get the camera info and print it out
 		error = camera.GetCameraInfo( &camInfo );
+
+//		cout << "GetCameraInfo:" << error << endl;
 		if ( error != PGRERROR_OK )
 		{
 			cout << "Failed to get camera info from camera" << endl;
