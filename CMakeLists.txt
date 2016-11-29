@@ -1,11 +1,36 @@
-project( apriltag2 C CXX)
+project( apriltag2 )
 
 cmake_minimum_required(VERSION 2.8)
 
-set(CMAKE_C_FLAGS "-std=gnu99 -fPIC -Wall -Wno-unused-parameter -Wno-unused-function -I. -O4")
+# include_directories("/home/fschiano/Repositories/apriltag2")
+# include_directories("/home/fschiano/Repositories/apriltag2/common")
+# include_directories("/usr/include")
 
-include_directories("/home/fschiano/Repositories/apriltag2")
-include_directories("/home/fschiano/Repositories/apriltag2/common")
-include_directories("/usr/include")
-add_library( apriltag STATIC apriltag.c )
-add_library( apriltag SHARED apriltag.c )
+set(CMAKE_C_FLAGS "-std=gnu99 -fPIC -Wall -Wno-unused-parameter -Wno-unused-function -I. -O4")
+# set( C_STANDARD gnu99)
+# set( CMAKE_CXX_STANDARD gnu99)
+
+message("CMAKE_SOURCE_DIR=${CMAKE_SOURCE_DIR}")
+
+file(GLOB apriltag_SRC "*.c")
+file(GLOB apriltag_HEADERS "*.h")
+
+set(APRILTAG_SRCS ${apriltag_SRC})
+set(APRILTAG_HEADERS ${apriltag_HEADERS})
+
+# set(CMAKE_CURRENT_LIST_DIR "/home/fschiano/Repositories/apriltag2")
+
+message(STATUS "CMAKE_CURRENT_LIST_DIR=${CMAKE_CURRENT_LIST_DIR}")
+
+add_library(apriltag STATIC ${APRILTAG_SRCS})
+# add_library(apriltagShared SHARED ${APRILTAG_SRCS})
+target_include_directories(apriltag PUBLIC ${CMAKE_SOURCE_DIR})
+target_compile_options(apriltag PUBLIC -fPIC -Wall -Wno-unused-parameter -Wno-unused-function -O4)
+
+install(TARGETS apriltag
+        ARCHIVE DESTINATION lib
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib)
+install(DIRECTORY CMAKE_CURRENT_LIST_DIR/include/
+        DESTINATION CMAKE_CURRENT_LIST_DIR/include/
+        FILES_MATCHING PATTERN *.h)
