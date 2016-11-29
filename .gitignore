@@ -4,6 +4,7 @@ example/opencvDemo
 example/apriltag_demo
 
 *CMakeLists.txt.user
+*.cbp
 
 # Compiled source #
 ###################
