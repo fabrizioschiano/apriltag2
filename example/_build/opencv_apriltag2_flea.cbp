@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+   <FileVersion major="1" minor="6" />
+   <Project>
+      <Option title="opencv_apriltag2_flea" />
+      <Option makefile_is_custom="1" />
+      <Option compiler="gcc" />
+      <Option virtualFolders="CMake Files\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\..\;CMake Files\..\..\..\..\..\;CMake Files\..\..\..\..\..\usr\;CMake Files\..\..\..\..\..\usr\share\;CMake Files\..\..\..\..\..\usr\share\OpenCV\;CMake Files\..\..\visp\;CMake Files\..\..\visp\visp-build\;" />
+      <Build>
+      <Target title="all">
+         <Option working_dir="/home/fschiano/Repositories/apriltag2/example/_build" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/fschiano/Repositories/apriltag2/example/_build/Makefile&quot;  VERBOSE=1 all" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/fschiano/Repositories/apriltag2/example/_build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/fschiano/Repositories/apriltag2/example/_build/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/fschiano/Repositories/apriltag2/example/_build/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="opencvDemo">
+         <Option output="/home/fschiano/Repositories/apriltag2/example/_build/opencvDemo" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/fschiano/Repositories/apriltag2/example/_build" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/home/fschiano/Repositories/apriltag2" />
+            <Add directory="/home/fschiano/Repositories/apriltag2/common" />
+            <Add directory="/home/fschiano/Repositories/apriltag2/example/usr/local" />
+            <Add directory="/home/fschiano/Repositories/visp/visp-build/include" />
+            <Add directory="/home/fschiano/Repositories/visp/visp/modules/ar/include" />
+            <Add directory="/home/fschiano/Repositories/visp/visp/modules/core/include" />
+            <Add directory="/home/fschiano/Repositories/visp/visp/modules/detection/include" />
+            <Add directory="/home/fschiano/Repositories/visp/visp/modules/gui/include" />
+            <Add directory="/home/fschiano/Repositories/visp/visp/modules/io/include" />
+            <Add directory="/home/fschiano/Repositories/visp/visp/modules/robot/include" />
+            <Add directory="/home/fschiano/Repositories/visp/visp/modules/sensor/include" />
+            <Add directory="/home/fschiano/Repositories/visp/visp/modules/tracker/blob/include" />
+            <Add directory="/home/fschiano/Repositories/visp/visp/modules/tracker/klt/include" />
+            <Add directory="/home/fschiano/Repositories/visp/visp/modules/tracker/mbt/include" />
+            <Add directory="/home/fschiano/Repositories/visp/visp/modules/tracker/me/include" />
+            <Add directory="/home/fschiano/Repositories/visp/visp/modules/tracker/tt/include" />
+            <Add directory="/home/fschiano/Repositories/visp/visp/modules/tracker/tt_mi/include" />
+            <Add directory="/home/fschiano/Repositories/visp/visp/modules/vision/include" />
+            <Add directory="/home/fschiano/Repositories/visp/visp/modules/visual_features/include" />
+            <Add directory="/home/fschiano/Repositories/visp/visp/modules/vs/include" />
+            <Add directory="/usr/include/OGRE" />
+            <Add directory="/usr/include/flycapture" />
+            <Add directory="/usr/include/libusb-1.0" />
+            <Add directory="/usr/include/libxml2" />
+            <Add directory="/usr/include/ois" />
+            <Add directory="/usr/include/opencv" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/fschiano/Repositories/apriltag2/example/_build/Makefile&quot;  VERBOSE=1 opencvDemo" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/fschiano/Repositories/apriltag2/example/_build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/fschiano/Repositories/apriltag2/example/_build/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/fschiano/Repositories/apriltag2/example/_build/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="opencvDemo/fast">
+         <Option output="/home/fschiano/Repositories/apriltag2/example/_build/opencvDemo" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/fschiano/Repositories/apriltag2/example/_build" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/home/fschiano/Repositories/apriltag2" />
+            <Add directory="/home/fschiano/Repositories/apriltag2/common" />
+            <Add directory="/home/fschiano/Repositories/apriltag2/example/usr/local" />
+            <Add directory="/home/fschiano/Repositories/visp/visp-build/include" />
+            <Add directory="/home/fschiano/Repositories/visp/visp/modules/ar/include" />
+            <Add directory="/home/fschiano/Repositories/visp/visp/modules/core/include" />
+            <Add directory="/home/fschiano/Repositories/visp/visp/modules/detection/include" />
+            <Add directory="/home/fschiano/Repositories/visp/visp/modules/gui/include" />
+            <Add directory="/home/fschiano/Repositories/visp/visp/modules/io/include" />
+            <Add directory="/home/fschiano/Repositories/visp/visp/modules/robot/include" />
+            <Add directory="/home/fschiano/Repositories/visp/visp/modules/sensor/include" />
+            <Add directory="/home/fschiano/Repositories/visp/visp/modules/tracker/blob/include" />
+            <Add directory="/home/fschiano/Repositories/visp/visp/modules/tracker/klt/include" />
+            <Add directory="/home/fschiano/Repositories/visp/visp/modules/tracker/mbt/include" />
+            <Add directory="/home/fschiano/Repositories/visp/visp/modules/tracker/me/include" />
+            <Add directory="/home/fschiano/Repositories/visp/visp/modules/tracker/tt/include" />
+            <Add directory="/home/fschiano/Repositories/visp/visp/modules/tracker/tt_mi/include" />
+            <Add directory="/home/fschiano/Repositories/visp/visp/modules/vision/include" />
+            <Add directory="/home/fschiano/Repositories/visp/visp/modules/visual_features/include" />
+            <Add directory="/home/fschiano/Repositories/visp/visp/modules/vs/include" />
+            <Add directory="/usr/include/OGRE" />
+            <Add directory="/usr/include/flycapture" />
+            <Add directory="/usr/include/libusb-1.0" />
+            <Add directory="/usr/include/libxml2" />
+            <Add directory="/usr/include/ois" />
+            <Add directory="/usr/include/opencv" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/fschiano/Repositories/apriltag2/example/_build/Makefile&quot;  VERBOSE=1 opencvDemo/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/fschiano/Repositories/apriltag2/example/_build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/fschiano/Repositories/apriltag2/example/_build/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/fschiano/Repositories/apriltag2/example/_build/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="rebuild_cache">
+         <Option working_dir="/home/fschiano/Repositories/apriltag2/example/_build" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/fschiano/Repositories/apriltag2/example/_build/Makefile&quot;  VERBOSE=1 rebuild_cache" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/fschiano/Repositories/apriltag2/example/_build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/fschiano/Repositories/apriltag2/example/_build/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/fschiano/Repositories/apriltag2/example/_build/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      </Build>
+      <Unit filename="/home/fschiano/Repositories/apriltag2/example/opencv_demo.cc">
+      </Unit>
+      <Unit filename="/home/fschiano/Repositories/apriltag2/example/CMakeLists.txt">
+          <Option virtualFolder="CMake Files\" />
+      </Unit>
+      <Unit filename="/home/fschiano/Repositories/apriltag2/example/../../../../../usr/share/OpenCV/OpenCVConfig-version.cmake">
+          <Option virtualFolder="CMake Files\..\..\..\..\..\usr\share\OpenCV\" />
+      </Unit>
+      <Unit filename="/home/fschiano/Repositories/apriltag2/example/../../../../../usr/share/OpenCV/OpenCVConfig.cmake">
+          <Option virtualFolder="CMake Files\..\..\..\..\..\usr\share\OpenCV\" />
+      </Unit>
+      <Unit filename="/home/fschiano/Repositories/apriltag2/example/../../../../../usr/share/OpenCV/OpenCVModules.cmake">
+          <Option virtualFolder="CMake Files\..\..\..\..\..\usr\share\OpenCV\" />
+      </Unit>
+      <Unit filename="/home/fschiano/Repositories/apriltag2/example/../../../../../usr/share/OpenCV/OpenCVModules-release.cmake">
+          <Option virtualFolder="CMake Files\..\..\..\..\..\usr\share\OpenCV\" />
+      </Unit>
+      <Unit filename="/home/fschiano/Repositories/apriltag2/example/../../visp/visp-build/VISPConfigVersion.cmake">
+          <Option virtualFolder="CMake Files\..\..\visp\visp-build\" />
+      </Unit>
+      <Unit filename="/home/fschiano/Repositories/apriltag2/example/../../visp/visp-build/VISPConfig.cmake">
+          <Option virtualFolder="CMake Files\..\..\visp\visp-build\" />
+      </Unit>
+      <Unit filename="/home/fschiano/Repositories/apriltag2/example/../../visp/visp-build/VISPModules.cmake">
+          <Option virtualFolder="CMake Files\..\..\visp\visp-build\" />
+      </Unit>
+   </Project>
+</CodeBlocks_project_file>
