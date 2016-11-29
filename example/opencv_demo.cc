@@ -32,16 +32,12 @@
     either expressed or implied, of the FreeBSD Project.
      */
 
-
-#include <visp3/gui/vpDisplayGDI.h>
+#include <visp/vpDisplayGDI.h>
 #include <visp/vpDisplayX.h>
 #include <visp/vpDot2.h>
 #include <visp/vpImageIo.h>
 #include <visp/vpPixelMeterConversion.h>
-
 #include <visp/vpPose.h>
-#include <visp/vpPoint.h>
-
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -59,9 +55,14 @@
 #include "tag25h7.h"
 #include "tag16h5.h"
 
+#include "computation.h"
+
 using namespace std;
 using namespace cv;
 using namespace FlyCapture2;
+
+//void computePoseFab(std::vector<vpPoint> &point, const std::vector<vpImagePoint> &dot,
+//                 const vpCameraParameters &cam, bool init, vpHomogeneousMatrix &cMo);
 
 int main(int argc, char *argv[])
 {
@@ -187,6 +188,10 @@ int main(int argc, char *argv[])
         td->refine_decode = getopt_get_bool(getopt, "refine-decode");
         td->refine_pose = getopt_get_bool(getopt, "refine-pose");
 
+        vpImage<unsigned char> I;
+//        vpImageIo::read( rawImage );
+
+
         Mat frame, gray;
         while (!key) {
             // Get the image
@@ -241,8 +246,19 @@ int main(int argc, char *argv[])
                 cout<<"["<<det->c[0]<<","<<det->c[1]<<"]"<<endl;
                 //                                        cout << "( " << det->p[0][0] << " )";
                 cout << "Points: " << endl;
-                cout << "( " << det->p[0][0] << " )";
-                cout << "( " << det->p[0][1] << " )";
+
+                // det->p is [4][2]
+
+                for (int var1 = 0; var1 < 4; ++var1) {
+                    cout << "Point: " << var1 <<endl;
+                    cout << ":::::( " << det->p[var1][0] <<","<<det->p[var1][1] << " ):::::"<<endl;
+                }
+//                cout <<"1"<<endl;
+//                cout << ":::::( " << det->p[0][0] << " ):::::"<<endl;
+//                cout << ":::::( " << det->p[0][1] << " ):::::"<<endl;
+
+//                cout << size(det->p);
+
                 stringstream ss;
                 ss << det->id;
                 //            cout << det->H<<endl;
@@ -273,22 +289,27 @@ int main(int argc, char *argv[])
                         det->c[1]+textsize.height/2),
                         fontface, fontscale, Scalar(0xff, 0x99, 0), 2);
 
-
                 std::vector<vpPoint> point(4);
+                std::vector<vpDot2> dot(4);
                 std::vector<vpImagePoint> corners(4);
+                vpHomogeneousMatrix cMo;
+                bool init = true;
+
+                cout<<"::::::::::::::::"<<dot.at(3) << endl;
+//                dot.assign( = 190;
+
                 //Set points coordinates
 
                 double dist_point_=0.086;
 
-                point[0].setWorldCoordinates(-dist_point_,-dist_point_, 0) ;
-                point[1].setWorldCoordinates(-dist_point_,dist_point_, 0) ;
-                point[2].setWorldCoordinates(dist_point_,dist_point_, 0) ;
-                point[3].setWorldCoordinates(dist_point_,-dist_point_,0) ;
+                point[0].setWorldCoordinates(-dist_point_,dist_point_, 0) ;
+                point[1].setWorldCoordinates(dist_point_,dist_point_, 0) ;
+                point[2].setWorldCoordinates(dist_point_,-dist_point_, 0) ;
+                point[3].setWorldCoordinates(-dist_point_,-dist_point_,0) ;
                 //                                        cout << td->quad_decimate << endl ;
-                vpHomogeneousMatrix cMo;
 
-                //                                        <px>684.1393341905</px>
-                //                                        <py>682.7092957507</py>
+                // <px>684.1393341905</px>
+                // <py>682.7092957507</py>
                 double px = 684.1393341905;
                 double py = 682.7092957507;
                 double u0 = 1920/td->quad_decimate;
@@ -300,11 +321,20 @@ int main(int argc, char *argv[])
 
                 // It is also possible to print the current camera parameters
                 std::cout << cam << std::endl;
+                cout <<"-------------------"<<corners.front() << endl;
 
-                //                                        vpBlobsTargetTracker::computePose(std::vector<vpPoint> &point, const std::vector<vpImagePoint> &corners, const vpCameraParameters &cam, bool &init, vpHomogeneousMatrix &cMo)
+                for (int var3 = 0; var3 < 3; ++var3) {
+                    corners[i].set_u(det->p[i][0]);
+                    corners[i].set_v(det->p[i][1]);
+                }
+//                corners[0].set_i(89.90);
 
 
-                // cout << det->p[1][0] << endl;
+                cout <<"-----------   --------"<<corners.front() << endl;
+//                vpBlobsTargetTracker::computePose(std::vector<vpPoint> &point, const std::vector<vpImagePoint> &corners, const vpCameraParameters &cam, bool &init, vpHomogeneousMatrix &cMo);
+//                computePoseFab( point,  corners,  cam, init,  cMo);
+
+                // cout << det- >p[1][0] << endl;
             }
             zarray_destroy(detections);
 
@@ -332,4 +362,32 @@ int main(int argc, char *argv[])
     getopt_destroy(getopt);
 
     return 0;
+}
+
+
+void computePoseFab(std::vector<vpPoint> &point, const std::vector<vpImagePoint> &corners,const vpCameraParameters &cam, bool &init, vpHomogeneousMatrix &cMo)
+{
+    vpPose pose;
+    double x=0, y=0;
+    for (unsigned int i=0; i < point.size(); i ++) {
+        vpPixelMeterConversion::convertPoint(cam, corners[i], x, y);
+        point[i].set_x(x);
+        point[i].set_y(y);
+        pose.addPoint(point[i]);
+    }
+
+    if (init) {
+        vpHomogeneousMatrix cMo_dementhon, cMo_lagrange;
+        pose.computePose(vpPose::DEMENTHON_VIRTUAL_VS, cMo_dementhon);
+        double residual_dementhon = pose.computeResidual(cMo_dementhon);
+        pose.computePose(vpPose::LAGRANGE_VIRTUAL_VS, cMo_lagrange);
+        double residual_lagrange = pose.computeResidual(cMo_lagrange);
+        if (residual_dementhon < residual_lagrange)
+            cMo = cMo_dementhon;
+        else
+            cMo = cMo_lagrange;
+    }
+
+    pose.computePose(vpPose::VIRTUAL_VS, cMo) ;
+    init = false;
 }
