@@ -33,26 +33,35 @@
 	 */
 
 
-	#include <opencv2/core/core.hpp>
-	#include <opencv2/highgui/highgui.hpp>
+#include <visp3/gui/vpDisplayGDI.h>
+#include <visp/vpDisplayX.h>
+#include <visp/vpDot2.h>
+#include <visp/vpImageIo.h>
+#include <visp/vpPixelMeterConversion.h>
 
-	#include "flycapture/FlyCapture2.h"
-	// #include "Error.h"
-	#include <iostream>
+#include <visp/vpPose.h>
+#include <visp/vpPoint.h>
 
-	#include "opencv2/opencv.hpp"
 
-	#include "apriltag.h"
-	#include "tag36h11.h"
-	#include "tag36h10.h"
-	#include "tag36artoolkit.h"
-	#include "tag25h9.h"
-	#include "tag25h7.h"
-	#include "tag16h5.h"
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
-	using namespace std;
-	using namespace cv;
-	using namespace FlyCapture2;
+#include "flycapture/FlyCapture2.h"
+#include <iostream>
+
+#include "opencv2/opencv.hpp"
+
+#include "apriltag.h"
+#include "tag36h11.h"
+#include "tag36h10.h"
+#include "tag36artoolkit.h"
+#include "tag25h9.h"
+#include "tag25h7.h"
+#include "tag16h5.h"
+
+using namespace std;
+using namespace cv;
+using namespace FlyCapture2;
 
 	int main(int argc, char *argv[])
 	{
@@ -98,7 +107,7 @@
 		// Get the camera info and print it out
 		error = camera.GetCameraInfo( &camInfo );
 
-		cout << "GetCameraInfo:" << error << endl;
+//		cout << "GetCameraInfo:" << error << endl;
 		if ( error != PGRERROR_OK )
 		{
 			cout << "Failed to get camera info from camera" << endl;
@@ -230,7 +239,11 @@
 							Point(det->p[3][0], det->p[3][1]),
 							Scalar(0xff, 0, 0), 2);
 					cout<<"["<<det->c[0]<<","<<det->c[1]<<"]"<<endl;
-					stringstream ss;
+//                                        cout << "( " << det->p[0][0] << " )";
+                                        cout << "Points: " << endl;
+                                        cout << "( " << det->p[0][0] << " )";
+                                        cout << "( " << det->p[0][1] << " )";
+                                        stringstream ss;
 					ss << det->id;
 					//            cout << det->H<<endl;
 					//				*det->H H[0][]
@@ -247,7 +260,7 @@
 					//matd_t *matd = matd_create(3,3);
 					matd_t * ciao = new matd_t;
 					double camera_matrix [9] = {687.216761, 0.000000, 1111.575057, 0.000000, 673.787664, 747.109306, 0.000000, 0.000000, 1.000000};
-					//				int intero = homography_to_pose(det->H,camera_matrix[1],camera_matrix[5],camera_matrix[3],camera_matrix[6])->ncols;
+//					int intero = homography_to_pose(det->H,camera_matrix[1],camera_matrix[5],camera_matrix[3],camera_matrix[6])->ncols;
 					//				cout << doppio << endl;
 					// This is the text which is put on the image
 					String text = ss.str();
@@ -259,6 +272,38 @@
 					putText(frame, text, Point(det->c[0]-textsize.width/2,
 							det->c[1]+textsize.height/2),
 							fontface, fontscale, Scalar(0xff, 0x99, 0), 2);
+
+
+                                        std::vector<vpPoint> point(4);
+                                        std::vector<vpImagePoint> corners(4);
+                                        //Set points coordinates
+
+                                        double dist_point_=0.086;
+
+                                        point[0].setWorldCoordinates(-dist_point_,-dist_point_, 0) ;
+                                        point[1].setWorldCoordinates(-dist_point_,dist_point_, 0) ;
+                                        point[2].setWorldCoordinates(dist_point_,dist_point_, 0) ;
+                                        point[3].setWorldCoordinates(dist_point_,-dist_point_,0) ;
+//                                        cout << td->quad_decimate << endl ;
+                                        vpHomogeneousMatrix cMo;
+
+//                                        <px>684.1393341905</px>
+//                                        <py>682.7092957507</py>
+                                        double px = 684.1393341905;
+                                        double py = 682.7092957507;
+                                        double u0 = 1920/td->quad_decimate;
+                                        double v0 = 1080/td->quad_decimate;
+                                        // Create a camera parameter container
+                                        vpCameraParameters cam;
+                                        // Camera initialization with a perspective projection without distortion model
+                                        cam.initPersProjWithoutDistortion(px,py,u0,v0);
+
+                                        // It is also possible to print the current camera parameters
+                                        std::cout << cam << std::endl;
+
+//                                        vpBlobsTargetTracker::computePose(std::vector<vpPoint> &point, const std::vector<vpImagePoint> &corners, const vpCameraParameters &cam, bool &init, vpHomogeneousMatrix &cMo)
+
+
 					// cout << det->p[1][0] << endl;
 				}
 				zarray_destroy(detections);
