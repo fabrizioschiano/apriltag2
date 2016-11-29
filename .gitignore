@@ -1,7 +1,7 @@
 # Specific files ignored
 ###################
-example/opencvDemo
-example/apriltag_demo
+opencvDemo
+*apriltag_demo
 
 *CMakeLists.txt.user
 *.cbp
