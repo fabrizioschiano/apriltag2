@@ -50,7 +50,7 @@ static inline float sq(float v)
 matd_t *homography_compute(zarray_t *correspondences, int flags)
 {
 
-	printf("In homography compute\n");
+        //printf("In homography compute\n");
 	// compute centroids of both sets of points (yields a better
     // conditioned information matrix)
     double x_cx = 0, x_cy = 0;
