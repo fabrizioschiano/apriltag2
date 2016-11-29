@@ -48,6 +48,7 @@ Thumbs.db
 
 # CMAKE ignore
 ######################
+Makefile
 CMakeCache.txt
 CMakeFiles
 CMakeScripts
