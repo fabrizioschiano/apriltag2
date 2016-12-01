@@ -300,6 +300,7 @@ matd_t *homography_compute(zarray_t *correspondences, int flags)
 
 matd_t *homography_to_pose(const matd_t *H, double fx, double fy, double cx, double cy)
 {
+    printf("In homography");
     // Note that every variable that we compute is proportional to the scale factor of H.
     double R20 = MATD_EL(H, 2, 0);
     double R21 = MATD_EL(H, 2, 1);
