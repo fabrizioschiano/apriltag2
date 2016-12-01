@@ -55,14 +55,47 @@
 #include "tag25h7.h"
 #include "tag16h5.h"
 
-#include "computation.h"
+#include "userDefinedFunctions.h"
 
 using namespace std;
 using namespace cv;
 using namespace FlyCapture2;
 
-//void computePoseFab(std::vector<vpPoint> &point, const std::vector<vpImagePoint> &dot,
-//                 const vpCameraParameters &cam, bool init, vpHomogeneousMatrix &cMo);
+void computePose(std::vector<vpPoint> &point, const std::vector<vpImagePoint> &corners,
+                                       const vpCameraParameters &cam, bool &init, vpHomogeneousMatrix &cMo)
+{
+  vpPose pose;
+  double x=0, y=0;
+  cout << __LINE__ << endl;
+  for (unsigned int i=0; i < point.size(); i ++) {
+    vpPixelMeterConversion::convertPoint(cam, corners[i], x, y);
+    point[i].set_x(x);
+    point[i].set_y(y);
+    pose.addPoint(point[i]);
+  }
+  cout << __LINE__ << endl;
+
+  if (init) {
+    cout << "------In Init------" << endl;
+    vpHomogeneousMatrix cMo_dementhon, cMo_lagrange;
+    cout << __LINE__ << endl;
+    pose.computePose(vpPose::DEMENTHON_VIRTUAL_VS, cMo_dementhon);
+    cout << __LINE__ << endl;
+    double residual_dementhon = pose.computeResidual(cMo_dementhon);
+    cout << __LINE__ << endl;
+    pose.computePose(vpPose::LAGRANGE_VIRTUAL_VS, cMo_lagrange);
+    double residual_lagrange = pose.computeResidual(cMo_lagrange);
+    if (residual_dementhon < residual_lagrange)
+      cMo = cMo_dementhon;
+    else
+      cMo = cMo_lagrange;
+    cout << __LINE__ << endl;
+  }
+
+  pose.computePose(vpPose::VIRTUAL_VS, cMo) ;
+  init = false;
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -191,6 +224,11 @@ int main(int argc, char *argv[])
         vpImage<unsigned char> I;
 //        vpImageIo::read( rawImage );
 
+        std::vector<vpPoint> point(4);
+        std::vector<vpDot2> dot(4);
+        std::vector<vpImagePoint> corners(4);
+        vpHomogeneousMatrix cMo;
+        bool init = true;
 
         Mat frame, gray;
         while (!key) {
@@ -244,23 +282,24 @@ int main(int argc, char *argv[])
                         Point(det->p[3][0], det->p[3][1]),
                         Scalar(0xff, 0, 0), 2);
                 cout<<"["<<det->c[0]<<","<<det->c[1]<<"]"<<endl;
-                //                                        cout << "( " << det->p[0][0] << " )";
-                cout << "Points: " << endl;
-
+                // cout << "( " << det->p[0][0] << " )";
                 // det->p is [4][2]
-
+                cout << "Points: " << endl;
                 for (int var1 = 0; var1 < 4; ++var1) {
                     cout << "Point: " << var1 <<endl;
                     cout << ":::::( " << det->p[var1][0] <<","<<det->p[var1][1] << " ):::::"<<endl;
                 }
-//                cout <<"1"<<endl;
-//                cout << ":::::( " << det->p[0][0] << " ):::::"<<endl;
-//                cout << ":::::( " << det->p[0][1] << " ):::::"<<endl;
 
-//                cout << size(det->p);
+                double cog [2];
+                computeCoG(det->p,cog);
 
+                cout << "COG: "<< "[" <<cog[0] << "," << cog[1] << "]"<<endl;
+                // The following is what will be written on the image (in the tag)
                 stringstream ss;
                 ss << det->id;
+
+                cout <<"Line:"<< __LINE__<<endl;
+
                 //            cout << det->H<<endl;
                 //				*det->H H[0][]
                 cout << "-------------" <<endl;
@@ -274,10 +313,11 @@ int main(int argc, char *argv[])
                 cout << det->H->nrows  <<endl;
                 //				cout << det->H  <<endl;
                 //matd_t *matd = matd_create(3,3);
-                matd_t * ciao = new matd_t;
+                //                matd_t * ciao = new matd_t;
                 double camera_matrix [9] = {687.216761, 0.000000, 1111.575057, 0.000000, 673.787664, 747.109306, 0.000000, 0.000000, 1.000000};
-                //					int intero = homography_to_pose(det->H,camera_matrix[1],camera_matrix[5],camera_matrix[3],camera_matrix[6])->ncols;
-                //				cout << doppio << endl;
+                cout << "Trying to compute TEMPORARYVAR" <<endl;
+                double temporaryVar = homography_to_pose(det->H,-camera_matrix[1],camera_matrix[5],camera_matrix[3],camera_matrix[6])->data[1];
+                cout << "TEMPORARYVAR: " << temporaryVar << endl;
                 // This is the text which is put on the image
                 String text = ss.str();
                 int fontface = FONT_HERSHEY_SCRIPT_SIMPLEX;
@@ -288,12 +328,6 @@ int main(int argc, char *argv[])
                 putText(frame, text, Point(det->c[0]-textsize.width/2,
                         det->c[1]+textsize.height/2),
                         fontface, fontscale, Scalar(0xff, 0x99, 0), 2);
-
-                std::vector<vpPoint> point(4);
-                std::vector<vpDot2> dot(4);
-                std::vector<vpImagePoint> corners(4);
-                vpHomogeneousMatrix cMo;
-                bool init = true;
 
                 cout<<"::::::::::::::::"<<dot.at(3) << endl;
 //                dot.assign( = 190;
@@ -307,18 +341,18 @@ int main(int argc, char *argv[])
                 point[2].setWorldCoordinates(dist_point_,-dist_point_, 0) ;
                 point[3].setWorldCoordinates(-dist_point_,-dist_point_,0) ;
                 //                                        cout << td->quad_decimate << endl ;
-
-                // <px>684.1393341905</px>
-                // <py>682.7092957507</py>
-                double px = 684.1393341905;
-                double py = 682.7092957507;
+                //                <!--Pixel ratio-->
+                //                <px>680.5800990142</px>
+                //                <py>680.9840738923</py>
+                double px = 680.5800990142;
+                double py = 680.9840738923;
                 double u0 = 1920/td->quad_decimate;
                 double v0 = 1080/td->quad_decimate;
+                cout << "(u0,v0): " << "(" <<u0 <<","<<v0<<")"<<endl;
                 // Create a camera parameter container
                 vpCameraParameters cam;
                 // Camera initialization with a perspective projection without distortion model
                 cam.initPersProjWithoutDistortion(px,py,u0,v0);
-
                 // It is also possible to print the current camera parameters
                 std::cout << cam << std::endl;
                 cout <<"-------------------"<<corners.front() << endl;
@@ -327,14 +361,17 @@ int main(int argc, char *argv[])
                     corners[i].set_u(det->p[i][0]);
                     corners[i].set_v(det->p[i][1]);
                 }
-//                corners[0].set_i(89.90);
-
+                //                cMo.eye();
 
                 cout <<"-----------   --------"<<corners.front() << endl;
-//                vpBlobsTargetTracker::computePose(std::vector<vpPoint> &point, const std::vector<vpImagePoint> &corners, const vpCameraParameters &cam, bool &init, vpHomogeneousMatrix &cMo);
-//                computePoseFab( point,  corners,  cam, init,  cMo);
 
-                // cout << det- >p[1][0] << endl;
+                computePose( point,  corners,  cam, init,  cMo);
+                //                vpTranslationVector trans;
+                //                double x = cMo[0][1];
+                //                double y = cMo[1][3];
+                //                double z = cMo[2][3];
+                //            cMo.extract(trans);
+                //                cout << "cMo.data: [" << x << "," << y << "," << z << "]" << endl;
             }
             zarray_destroy(detections);
 
@@ -362,32 +399,4 @@ int main(int argc, char *argv[])
     getopt_destroy(getopt);
 
     return 0;
-}
-
-
-void computePoseFab(std::vector<vpPoint> &point, const std::vector<vpImagePoint> &corners,const vpCameraParameters &cam, bool &init, vpHomogeneousMatrix &cMo)
-{
-    vpPose pose;
-    double x=0, y=0;
-    for (unsigned int i=0; i < point.size(); i ++) {
-        vpPixelMeterConversion::convertPoint(cam, corners[i], x, y);
-        point[i].set_x(x);
-        point[i].set_y(y);
-        pose.addPoint(point[i]);
-    }
-
-    if (init) {
-        vpHomogeneousMatrix cMo_dementhon, cMo_lagrange;
-        pose.computePose(vpPose::DEMENTHON_VIRTUAL_VS, cMo_dementhon);
-        double residual_dementhon = pose.computeResidual(cMo_dementhon);
-        pose.computePose(vpPose::LAGRANGE_VIRTUAL_VS, cMo_lagrange);
-        double residual_lagrange = pose.computeResidual(cMo_lagrange);
-        if (residual_dementhon < residual_lagrange)
-            cMo = cMo_dementhon;
-        else
-            cMo = cMo_lagrange;
-    }
-
-    pose.computePose(vpPose::VIRTUAL_VS, cMo) ;
-    init = false;
 }
