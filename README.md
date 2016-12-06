@@ -102,6 +102,26 @@ a deep copy. Simply create an image_u8_t header for the cv::Mat data buffer:
         .buf = img.data
     };
 
+Scale
+---------------
+The tag detector doesn't consider the scale of the tag. Here is some sample code to scale the tag position.
+
+(You need to put, in the following code, in _tagsize_ the size of the tag you are using)
+
+            for (int i = 0; i < zarray_size(detections); i++) {
+                apriltag_detection_t *det;
+                zarray_get(detections, i, &det);
+
+                matd_t *M = homography_to_pose(det->H, -fx, fy, cx, cy);
+                double scale = tagsize / 2.0;
+                MATD_EL(M, 0, 3) *= scale;
+                MATD_EL(M, 1, 3) *= scale;
+                MATD_EL(M, 2, 3) *= scale;
+            }
+
+Basically the detector assumes each tag is centered at the origin of its own coordinate system, with the tag corners at (-1, -1), (1, -1), (1, 1), and (-1, 1). Therefore, it assumes the tag's width is 2 units. To get the tag pose in real units, scale the position by (tag size in meters)/2, or whatever unit you prefer.
+
+
 IROS 2016 PAPER
 ==================
 For more details about the algorithm look here:
