@@ -300,13 +300,8 @@ matd_t *homography_compute(zarray_t *correspondences, int flags)
 
 matd_t *homography_to_pose(const matd_t *H, double fx, double fy, double cx, double cy)
 {
-    printf("In homography\n");
+//    printf("In homography\n");
     // Note that every variable that we compute is proportional to the scale factor of H.
-
-
-
-
-
     double R20 = MATD_EL(H, 2, 0);
     double R21 = MATD_EL(H, 2, 1);
     double TZ  = MATD_EL(H, 2, 2);
@@ -325,9 +320,9 @@ matd_t *homography_to_pose(const matd_t *H, double fx, double fy, double cx, dou
     double length1 = sqrtf(R00*R00 + R10*R10 + R20*R20);
     double length2 = sqrtf(R01*R01 + R11*R11 + R21*R21);
     double s = 1.0 / sqrtf(length1 * length2);
-    printf("\nR00*R00: %f\n",R00*R00);
-    printf("\n(length1,length2): (%f,%f)\n",length1,length2);
-    printf("\ns: %f\n",s);
+//    printf("\nR00*R00: %f\n",R00*R00);
+//    printf("\n(length1,length2): (%f,%f)\n",length1,length2);
+//    printf("\ns: %f\n",s);
     // get sign of S by requiring the tag to be in front the camera;
     // we assume camera looks in the -Z direction.
 
@@ -351,9 +346,9 @@ matd_t *homography_to_pose(const matd_t *H, double fx, double fy, double cx, dou
     double R12 = R20*R01 - R00*R21;
     double R22 = R00*R11 - R10*R01;
 
-    printf("\n------------MATRIX H------------\n[%f\t%f\t%f]\n",MATD_EL(H, 0, 0),MATD_EL(H, 0, 1),MATD_EL(H, 0, 2));
-    printf("[%f\t%f\t%f]\n",MATD_EL(H, 1, 0),MATD_EL(H, 1, 1),MATD_EL(H, 1, 2));
-    printf("[%f\t%f\t%f]",MATD_EL(H, 2, 0),MATD_EL(H, 2, 1),MATD_EL(H, 2, 2));
+//    printf("\n------------MATRIX H------------\n[%f\t%f\t%f]\n",MATD_EL(H, 0, 0),MATD_EL(H, 0, 1),MATD_EL(H, 0, 2));
+//    printf("[%f\t%f\t%f]\n",MATD_EL(H, 1, 0),MATD_EL(H, 1, 1),MATD_EL(H, 1, 2));
+//    printf("[%f\t%f\t%f]",MATD_EL(H, 2, 0),MATD_EL(H, 2, 1),MATD_EL(H, 2, 2));
 
     // Improve rotation matrix by applying polar decomposition.
     if (1) {
@@ -361,9 +356,9 @@ matd_t *homography_to_pose(const matd_t *H, double fx, double fy, double cx, dou
         // "proper", but probably increases the reprojection error. An
         // iterative alignment step would be superior.
 
-        printf("\n------------MATRIX R------------\n[%f\t%f\t%f]\n",R00,R01,R02);
-        printf("[%f\t%f\t%f]\n",R10,R11,R12);
-        printf("[%f\t%f\t%f]\n",R20,R21,R22);
+//        printf("\n------------MATRIX R------------\n[%f\t%f\t%f]\n",R00,R01,R02);
+//        printf("[%f\t%f\t%f]\n",R10,R11,R12);
+//        printf("[%f\t%f\t%f]\n",R20,R21,R22);
         //        printf("R01: %f\t",R01);
         //        printf("R02: %f",R02);
 
@@ -396,11 +391,11 @@ matd_t *homography_to_pose(const matd_t *H, double fx, double fy, double cx, dou
         matd_destroy(R);
     }
 
-    printf("\n------------MATRIX TOT-----------\n");
-    printf("[%f\t%f\t%f\t%f]\n",R00, R01, R02, TX);
-    printf("[%f\t%f\t%f\t%f]\n",R10, R11, R12, TY);
-    printf("[%f\t%f\t%f\t%f]\n",R20, R21, R22, TZ);
-    printf("[%f\t%f\t%f\t%f]\n",0.0, 0.0, 0.0, 1.0 );
+//    printf("\n------------MATRIX TOT-----------\n");
+//    printf("[%f\t%f\t%f\t%f]\n",R00, R01, R02, TX);
+//    printf("[%f\t%f\t%f\t%f]\n",R10, R11, R12, TY);
+//    printf("[%f\t%f\t%f\t%f]\n",R20, R21, R22, TZ);
+//    printf("[%f\t%f\t%f\t%f]\n",0.0, 0.0, 0.0, 1.0 );
 
     return matd_create_data(4, 4, (double[]) { R00, R01, R02, TX,
                                                R10, R11, R12, TY,
