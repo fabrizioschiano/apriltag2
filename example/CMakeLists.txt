@@ -3,6 +3,17 @@
 cmake_minimum_required(VERSION 2.8)
 project( opencv_apriltag2_flea )
 
+## Find catkin macros and libraries
+## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
+## is used, also find other catkin packages
+# find_package(catkin REQUIRED COMPONENTS
+#   roscpp
+#   sensor_msgs
+#   geometry_msgs
+#   tf
+#   cmake_modules
+# )
+
 set( CMAKE_BUILD_TYPE Release)
 set( CMAKE_BUILD_DIRECTORY "/home/fschiano/Repositories/apriltag2/example")
 
