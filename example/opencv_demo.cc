@@ -32,21 +32,18 @@
     either expressed or implied, of the FreeBSD Project.
      */
 
-#include <visp/vpDisplayGDI.h>
-#include <visp/vpDisplayX.h>
-#include <visp/vpDot2.h>
-#include <visp/vpImageIo.h>
-#include <visp/vpPixelMeterConversion.h>
-#include <visp/vpPose.h>
-
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
-
-#include "flycapture/FlyCapture2.h"
+//Basic includes
 #include <iostream>
 
+// Opencv includes
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
 #include "opencv2/opencv.hpp"
 
+// Include for the flycapture, to work with the FLEA camera
+#include "flycapture/FlyCapture2.h"
+
+// Include for the apriltags
 #include "apriltag.h"
 #include "tag36h11.h"
 #include "tag36h10.h"
@@ -55,46 +52,62 @@
 #include "tag25h7.h"
 #include "tag16h5.h"
 
+// Costum functions (test)
 #include "userDefinedFunctions.h"
 
+// ROS includes
+#include "ros/ros.h"
+#include <geometry_msgs/PoseStamped.h>
+#include <geometry_msgs/PoseArray.h>
+
+// ViSP includes
+//#include <visp/vpDisplayGDI.h>
+//#include <visp/vpDisplayX.h>
+//#include <visp/vpDot2.h>
+//#include <visp/vpImageIo.h>
+//#include <visp/vpPixelMeterConversion.h>
+//#include <visp/vpPose.h>
+
+// Namespaces
 using namespace std;
 using namespace cv;
 using namespace FlyCapture2;
 
-void computePose(std::vector<vpPoint> &point, const std::vector<vpImagePoint> &corners,
-                                       const vpCameraParameters &cam, bool &init, vpHomogeneousMatrix &cMo)
-{
-  vpPose pose;
-  double x=0, y=0;
-  cout << __LINE__ << endl;
-  for (unsigned int i=0; i < point.size(); i ++) {
-    vpPixelMeterConversion::convertPoint(cam, corners[i], x, y);
-    point[i].set_x(x);
-    point[i].set_y(y);
-    pose.addPoint(point[i]);
-  }
-  cout << __LINE__ << endl;
+// This is a function I found on Giovanni's code.
+//void computePose(std::vector<vpPoint> &point, const std::vector<vpImagePoint> &corners,
+//                 const vpCameraParameters &cam, bool &init, vpHomogeneousMatrix &cMo)
+//{
+//    vpPose pose;
+//    double x=0, y=0;
+//    cout << __LINE__ << endl;
+//    for (unsigned int i=0; i < point.size(); i ++) {
+//        vpPixelMeterConversion::convertPoint(cam, corners[i], x, y);
+//        point[i].set_x(x);
+//        point[i].set_y(y);
+//        pose.addPoint(point[i]);
+//    }
+//    cout << __LINE__ << endl;
 
-  if (init) {
-    cout << "------In Init------" << endl;
-    vpHomogeneousMatrix cMo_dementhon, cMo_lagrange;
-    cout << __LINE__ << endl;
-    pose.computePose(vpPose::DEMENTHON_VIRTUAL_VS, cMo_dementhon);
-    cout << __LINE__ << endl;
-    double residual_dementhon = pose.computeResidual(cMo_dementhon);
-    cout << __LINE__ << endl;
-    pose.computePose(vpPose::LAGRANGE_VIRTUAL_VS, cMo_lagrange);
-    double residual_lagrange = pose.computeResidual(cMo_lagrange);
-    if (residual_dementhon < residual_lagrange)
-      cMo = cMo_dementhon;
-    else
-      cMo = cMo_lagrange;
-    cout << __LINE__ << endl;
-  }
+//    if (init) {
+//        cout << "------In Init------" << endl;
+//        vpHomogeneousMatrix cMo_dementhon, cMo_lagrange;
+//        cout << __LINE__ << endl;
+//        pose.computePose(vpPose::DEMENTHON_VIRTUAL_VS, cMo_dementhon);
+//        cout << __LINE__ << endl;
+//        double residual_dementhon = pose.computeResidual(cMo_dementhon);
+//        cout << __LINE__ << endl;
+//        pose.computePose(vpPose::LAGRANGE_VIRTUAL_VS, cMo_lagrange);
+//        double residual_lagrange = pose.computeResidual(cMo_lagrange);
+//        if (residual_dementhon < residual_lagrange)
+//            cMo = cMo_dementhon;
+//        else
+//            cMo = cMo_lagrange;
+//        cout << __LINE__ << endl;
+//    }
 
-  pose.computePose(vpPose::VIRTUAL_VS, cMo) ;
-  init = false;
-}
+//    pose.computePose(vpPose::VIRTUAL_VS, cMo) ;
+//    init = false;
+//}
 
 
 int main(int argc, char *argv[])
@@ -221,14 +234,18 @@ int main(int argc, char *argv[])
         td->refine_decode = getopt_get_bool(getopt, "refine-decode");
         td->refine_pose = getopt_get_bool(getopt, "refine-pose");
 
-        vpImage<unsigned char> I;
-//        vpImageIo::read( rawImage );
+        // In the following variable it will be put the coordinates of the center of the tag
+        double cog [2];
 
-        std::vector<vpPoint> point(4);
-        std::vector<vpDot2> dot(4);
-        std::vector<vpImagePoint> corners(4);
-        vpHomogeneousMatrix cMo;
+        //        vpImage<unsigned char> I;
+        //        vpImageIo::read( rawImage );
+        //        std::vector<vpPoint> point(4);
+        //        std::vector<vpDot2> dot(4);
+        //        std::vector<vpImagePoint> corners(4);
+        //        vpHomogeneousMatrix cMo;
+
         bool init = true;
+        double tagsize = 0.086;
 
         Mat frame, gray;
         while (!key) {
@@ -290,10 +307,10 @@ int main(int argc, char *argv[])
                     cout << ":::::( " << det->p[var1][0] <<","<<det->p[var1][1] << " ):::::"<<endl;
                 }
 
-                double cog [2];
-                computeCoG(det->p,cog);
 
+                computeCoG(det->p,cog);
                 cout << "COG: "<< "[" <<cog[0] << "," << cog[1] << "]"<<endl;
+
                 // The following is what will be written on the image (in the tag)
                 stringstream ss;
                 ss << det->id;
@@ -323,8 +340,8 @@ int main(int argc, char *argv[])
                 fy=camera_matrix[4];
                 cx=camera_matrix[2];
                 cy=camera_matrix[5];
-                double temporaryVar = homography_to_pose(det->H,-fx,-fy,cx,cy)->data[1];
-                cout << "TEMPORARYVAR: " << temporaryVar << endl;
+                //                double temporaryVar = homography_to_pose(det->H,-fx,-fy,cx,cy)->data[1];
+                //                cout << "TEMPORARYVAR: " << temporaryVar << endl;
                 // This is the text which is put on the image
                 String text = ss.str();
                 int fontface = FONT_HERSHEY_SCRIPT_SIMPLEX;
@@ -336,43 +353,57 @@ int main(int argc, char *argv[])
                         det->c[1]+textsize.height/2),
                         fontface, fontscale, Scalar(0xff, 0x99, 0), 2);
 
-                cout<<"::::::::::::::::"<<dot.at(3) << endl;
-//                dot.assign( = 190;
+                //                cout<<"::::::::::::::::"<<dot.at(3) << endl;
+                //                dot.assign( = 190;
 
                 //Set points coordinates
 
                 double dist_point_=0.086;
 
-                point[0].setWorldCoordinates(-dist_point_,dist_point_, 0) ;
-                point[1].setWorldCoordinates(dist_point_,dist_point_, 0) ;
-                point[2].setWorldCoordinates(dist_point_,-dist_point_, 0) ;
-                point[3].setWorldCoordinates(-dist_point_,-dist_point_,0) ;
+                //                point[0].setWorldCoordinates(-dist_point_,dist_point_, 0) ;
+                //                point[1].setWorldCoordinates(dist_point_,dist_point_, 0) ;
+                //                point[2].setWorldCoordinates(dist_point_,-dist_point_, 0) ;
+                //                point[3].setWorldCoordinates(-dist_point_,-dist_point_,0) ;
                 //                                        cout << td->quad_decimate << endl ;
                 //                <!--Pixel ratio-->
                 //                <px>680.5800990142</px>
                 //                <py>680.9840738923</py>
-                double px = 680.5800990142;
-                double py = 680.9840738923;
-                double u0 = 1920/td->quad_decimate;
-                double v0 = 1080/td->quad_decimate;
-                cout << "(u0,v0): " << "(" <<u0 <<","<<v0<<")"<<endl;
-                // Create a camera parameter container
-                vpCameraParameters cam;
+                //                double px = 680.5800990142;
+                //                double py = 680.9840738923;
+                //                double u0 = 1920/td->quad_decimate;
+                //                double v0 = 1080/td->quad_decimate;
+                //                cout << "(u0,v0): " << "(" <<u0 <<","<<v0<<")"<<endl;
+                //                // Create a camera parameter container
+                //                vpCameraParameters cam;
                 // Camera initialization with a perspective projection without distortion model
-                cam.initPersProjWithoutDistortion(px,py,u0,v0);
+                //                cam.initPersProjWithoutDistortion(px,py,u0,v0);
+
+
                 // It is also possible to print the current camera parameters
-                std::cout << cam << std::endl;
-                cout <<"-------------------"<<corners.front() << endl;
+                //                std::cout << cam << std::endl;
+                //                cout <<"-------------------"<<corners.front() << endl;
 
-                for (int var3 = 0; var3 < 3; ++var3) {
-                    corners[i].set_u(det->p[i][0]);
-                    corners[i].set_v(det->p[i][1]);
-                }
+                //                for (int var3 = 0; var3 < 3; ++var3) {
+                //                    corners[i].set_u(det->p[i][0]);
+                //                    corners[i].set_v(det->p[i][1]);
+                //                }
                 //                cMo.eye();
+                //                cout <<"-----------   --------"<<corners.front() << endl;
+                //                computePose( point,  corners,  cam, init,  cMo);
 
-                cout <<"-----------   --------"<<corners.front() << endl;
+                // Try to get the position of the tag w.r.t. the camera
+                for (int i = 0; i < zarray_size(detections); i++) {
+                    apriltag_detection_t *det;
+                    zarray_get(detections, i, &det);
 
-                computePose( point,  corners,  cam, init,  cMo);
+                    matd_t *M = homography_to_pose(det->H, -fx, fy, cx, cy);
+                    double scale = tagsize / 2.0;
+                    MATD_EL(M, 0, 3) *= scale;
+                    MATD_EL(M, 1, 3) *= scale;
+                    MATD_EL(M, 2, 3) *= scale;
+
+                    cout << "Detection " << i << ": [" << MATD_EL(M, 0, 3) << ", " << MATD_EL(M, 1, 3) << ", " << MATD_EL(M, 2, 3) << "]" << endl;
+                }
                 //                vpTranslationVector trans;
                 //                double x = cMo[0][1];
                 //                double y = cMo[1][3];
