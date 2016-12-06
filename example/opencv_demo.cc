@@ -314,9 +314,16 @@ int main(int argc, char *argv[])
                 //				cout << det->H  <<endl;
                 //matd_t *matd = matd_create(3,3);
                 //                matd_t * ciao = new matd_t;
-                double camera_matrix [9] = {687.216761, 0.000000, 1111.575057, 0.000000, 673.787664, 747.109306, 0.000000, 0.000000, 1.000000};
+                //                double camera_matrix [9] = {687.216761, 0.000000, 1111.575057, 0.000000, 673.787664, 747.109306, 0.000000, 0.000000, 1.000000};
+                double camera_matrix [9] = {345.604974, 0.000000, 541.032467, 0.000000, 345.272041, 371.544205, 0.000000, 0.000000, 1.000000};
                 cout << "Trying to compute TEMPORARYVAR" <<endl;
-                double temporaryVar = homography_to_pose(det->H,-camera_matrix[1],camera_matrix[5],camera_matrix[3],camera_matrix[6])->data[1];
+                double fx,fy,cx,cy;
+                fx=camera_matrix[0];
+                cout << "fx(before entering the homography_to_pose): "<<fx<<endl;
+                fy=camera_matrix[4];
+                cx=camera_matrix[2];
+                cy=camera_matrix[5];
+                double temporaryVar = homography_to_pose(det->H,-fx,-fy,cx,cy)->data[1];
                 cout << "TEMPORARYVAR: " << temporaryVar << endl;
                 // This is the text which is put on the image
                 String text = ss.str();
