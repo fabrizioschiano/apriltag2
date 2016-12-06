@@ -1,36 +1,36 @@
 /* (C) 2013-2016, The Regents of The University of Michigan
-All rights reserved.
+    All rights reserved.
 
-This software was developed in the APRIL Robotics Lab under the
-direction of Edwin Olson, ebolson@umich.edu. This software may be
-available under alternative licensing terms; contact the address
-above.
+    This software was developed in the APRIL Robotics Lab under the
+    direction of Edwin Olson, ebolson@umich.edu. This software may be
+    available under alternative licensing terms; contact the address
+    above.
 
-   BSD
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
+       BSD
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-1. Redistributions of source code must retain the above copyright notice, this
-   list of conditions and the following disclaimer.
-2. Redistributions in binary form must reproduce the above copyright notice,
-   this list of conditions and the following disclaimer in the documentation
-   and/or other materials provided with the distribution.
+    1. Redistributions of source code must retain the above copyright notice, this
+       list of conditions and the following disclaimer.
+    2. Redistributions in binary form must reproduce the above copyright notice,
+       this list of conditions and the following disclaimer in the documentation
+       and/or other materials provided with the distribution.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
-ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+    ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-The views and conclusions contained in the software and documentation are those
-of the authors and should not be interpreted as representing official policies,
-either expressed or implied, of the FreeBSD Project.
- */
+    The views and conclusions contained in the software and documentation are those
+    of the authors and should not be interpreted as representing official policies,
+    either expressed or implied, of the FreeBSD Project.
+     */
 
 #include <math.h>
 #include <stdio.h>
@@ -50,8 +50,8 @@ static inline float sq(float v)
 matd_t *homography_compute(zarray_t *correspondences, int flags)
 {
 
-        //printf("In homography compute\n");
-	// compute centroids of both sets of points (yields a better
+    //printf("In homography compute\n");
+    // compute centroids of both sets of points (yields a better
     // conditioned information matrix)
     double x_cx = 0, x_cy = 0;
     double y_cx = 0, y_cy = 0;
@@ -300,8 +300,13 @@ matd_t *homography_compute(zarray_t *correspondences, int flags)
 
 matd_t *homography_to_pose(const matd_t *H, double fx, double fy, double cx, double cy)
 {
-    printf("In homography");
+    printf("In homography\n");
     // Note that every variable that we compute is proportional to the scale factor of H.
+
+
+
+
+
     double R20 = MATD_EL(H, 2, 0);
     double R21 = MATD_EL(H, 2, 1);
     double TZ  = MATD_EL(H, 2, 2);
@@ -312,17 +317,25 @@ matd_t *homography_to_pose(const matd_t *H, double fx, double fy, double cx, dou
     double R11 = (MATD_EL(H, 1, 1) - cy*R21) / fy;
     double TY  = (MATD_EL(H, 1, 2) - cy*TZ)  / fy;
 
+    printf("\nR10: %f\n",R10);
+
+    printf("fx: %f\n",fx);
     // compute the scale by requiring that the rotation columns are unit length
     // (Use geometric average of the two length vectors we have)
     double length1 = sqrtf(R00*R00 + R10*R10 + R20*R20);
     double length2 = sqrtf(R01*R01 + R11*R11 + R21*R21);
     double s = 1.0 / sqrtf(length1 * length2);
-
+    printf("\nR00*R00: %f\n",R00*R00);
+    printf("\n(length1,length2): (%f,%f)\n",length1,length2);
+    printf("\ns: %f\n",s);
     // get sign of S by requiring the tag to be in front the camera;
     // we assume camera looks in the -Z direction.
+
+    printf("\nTZ:%f\n",TZ);
+
     if (TZ > 0)
         s *= -1;
-
+    printf ("This is line %d.\n", __LINE__);
     R20 *= s;
     R21 *= s;
     TZ  *= s;
@@ -332,11 +345,15 @@ matd_t *homography_to_pose(const matd_t *H, double fx, double fy, double cx, dou
     R10 *= s;
     R11 *= s;
     TY  *= s;
-
+    printf("R10: %f",R10);
     // now recover [R02 R12 R22] by noting that it is the cross product of the other two columns.
     double R02 = R10*R21 - R20*R11;
     double R12 = R20*R01 - R00*R21;
     double R22 = R00*R11 - R10*R01;
+
+    printf("\n------------MATRIX H------------\n[%f\t%f\t%f]\n",MATD_EL(H, 0, 0),MATD_EL(H, 0, 1),MATD_EL(H, 0, 2));
+    printf("[%f\t%f\t%f]\n",MATD_EL(H, 1, 0),MATD_EL(H, 1, 1),MATD_EL(H, 1, 2));
+    printf("[%f\t%f\t%f]",MATD_EL(H, 2, 0),MATD_EL(H, 2, 1),MATD_EL(H, 2, 2));
 
     // Improve rotation matrix by applying polar decomposition.
     if (1) {
@@ -344,13 +361,22 @@ matd_t *homography_to_pose(const matd_t *H, double fx, double fy, double cx, dou
         // "proper", but probably increases the reprojection error. An
         // iterative alignment step would be superior.
 
+        printf("\n------------MATRIX R------------\n[%f\t%f\t%f]\n",R00,R01,R02);
+        printf("[%f\t%f\t%f]\n",R10,R11,R12);
+        printf("[%f\t%f\t%f]\n",R20,R21,R22);
+        //        printf("R01: %f\t",R01);
+        //        printf("R02: %f",R02);
+
         matd_t *R = matd_create_data(3, 3, (double[]) { R00, R01, R02,
-                                                       R10, R11, R12,
-                                                       R20, R21, R22 });
+                                                        R10, R11, R12,
+                                                        R20, R21, R22 });
+        printf ("This is line %d.\n", __LINE__);
+
+//        printf()
 
         matd_svd_t svd = matd_svd(R);
         matd_destroy(R);
-
+        printf ("This is line %d.\n", __LINE__);
         R = matd_op("M*M'", svd.U, svd.V);
 
         matd_destroy(svd.U);
@@ -370,10 +396,18 @@ matd_t *homography_to_pose(const matd_t *H, double fx, double fy, double cx, dou
         matd_destroy(R);
     }
 
+    printf("\n------------MATRIX TOT-----------\n");
+    printf("[%f\t%f\t%f\t%f]\n",R00, R01, R02, TX);
+    printf("[%f\t%f\t%f\t%f]\n",R10, R11, R12, TY);
+    printf("[%f\t%f\t%f\t%f]\n",R20, R21, R22, TZ);
+    printf("[%f\t%f\t%f\t%f]\n",0.0, 0.0, 0.0, 1.0 );
+
     return matd_create_data(4, 4, (double[]) { R00, R01, R02, TX,
                                                R10, R11, R12, TY,
                                                R20, R21, R22, TZ,
-                                                0, 0, 0, 1 });
+                                               0, 0, 0, 1 });
+
+
 }
 
 // Similar to above
@@ -426,66 +460,66 @@ matd_t *homography_to_model_view(const matd_t *H, double F, double G, double A, 
     // TODO XXX: Improve rotation matrix by applying polar decomposition.
 
     return matd_create_data(4, 4, (double[]) { R00, R01, R02, TX,
-        R10, R11, R12, TY,
-        R20, R21, R22, TZ,
-        0, 0, 0, 1 });
+                                               R10, R11, R12, TY,
+                                               R20, R21, R22, TZ,
+                                               0, 0, 0, 1 });
 }
 
 // Only uses the upper 3x3 matrix.
 /*
-static void matrix_to_quat(const matd_t *R, double q[4])
-{
-    // see: "from quaternion to matrix and back"
+    static void matrix_to_quat(const matd_t *R, double q[4])
+    {
+        // see: "from quaternion to matrix and back"
 
-    // trace: get the same result if R is 4x4 or 3x3:
-    double T = MATD_EL(R, 0, 0) + MATD_EL(R, 1, 1) + MATD_EL(R, 2, 2) + 1;
-    double S = 0;
+        // trace: get the same result if R is 4x4 or 3x3:
+        double T = MATD_EL(R, 0, 0) + MATD_EL(R, 1, 1) + MATD_EL(R, 2, 2) + 1;
+        double S = 0;
 
-    double m0  = MATD_EL(R, 0, 0);
-    double m1  = MATD_EL(R, 1, 0);
-    double m2  = MATD_EL(R, 2, 0);
-    double m4  = MATD_EL(R, 0, 1);
-    double m5  = MATD_EL(R, 1, 1);
-    double m6  = MATD_EL(R, 2, 1);
-    double m8  = MATD_EL(R, 0, 2);
-    double m9  = MATD_EL(R, 1, 2);
-    double m10 = MATD_EL(R, 2, 2);
+        double m0  = MATD_EL(R, 0, 0);
+        double m1  = MATD_EL(R, 1, 0);
+        double m2  = MATD_EL(R, 2, 0);
+        double m4  = MATD_EL(R, 0, 1);
+        double m5  = MATD_EL(R, 1, 1);
+        double m6  = MATD_EL(R, 2, 1);
+        double m8  = MATD_EL(R, 0, 2);
+        double m9  = MATD_EL(R, 1, 2);
+        double m10 = MATD_EL(R, 2, 2);
 
-    if (T > 0.0000001) {
-        S = sqrtf(T) * 2;
-        q[1] = -( m9 - m6 ) / S;
-        q[2] = -( m2 - m8 ) / S;
-        q[3] = -( m4 - m1 ) / S;
-        q[0] = 0.25 * S;
-    } else if ( m0 > m5 && m0 > m10 )  {	// Column 0:
-        S  = sqrtf( 1.0 + m0 - m5 - m10 ) * 2;
-        q[1] = -0.25 * S;
-        q[2] = -(m4 + m1 ) / S;
-        q[3] = -(m2 + m8 ) / S;
-        q[0] = (m9 - m6 ) / S;
-    } else if ( m5 > m10 ) {			// Column 1:
-        S  = sqrtf( 1.0 + m5 - m0 - m10 ) * 2;
-        q[1] = -(m4 + m1 ) / S;
-        q[2] = -0.25 * S;
-        q[3] = -(m9 + m6 ) / S;
-        q[0] = (m2 - m8 ) / S;
-    } else {
-        // Column 2:
-        S  = sqrtf( 1.0 + m10 - m0 - m5 ) * 2;
-        q[1] = -(m2 + m8 ) / S;
-        q[2] = -(m9 + m6 ) / S;
-        q[3] = -0.25 * S;
-        q[0] = (m4 - m1 ) / S;
+        if (T > 0.0000001) {
+            S = sqrtf(T) * 2;
+            q[1] = -( m9 - m6 ) / S;
+            q[2] = -( m2 - m8 ) / S;
+            q[3] = -( m4 - m1 ) / S;
+            q[0] = 0.25 * S;
+        } else if ( m0 > m5 && m0 > m10 )  {	// Column 0:
+            S  = sqrtf( 1.0 + m0 - m5 - m10 ) * 2;
+            q[1] = -0.25 * S;
+            q[2] = -(m4 + m1 ) / S;
+            q[3] = -(m2 + m8 ) / S;
+            q[0] = (m9 - m6 ) / S;
+        } else if ( m5 > m10 ) {			// Column 1:
+            S  = sqrtf( 1.0 + m5 - m0 - m10 ) * 2;
+            q[1] = -(m4 + m1 ) / S;
+            q[2] = -0.25 * S;
+            q[3] = -(m9 + m6 ) / S;
+            q[0] = (m2 - m8 ) / S;
+        } else {
+            // Column 2:
+            S  = sqrtf( 1.0 + m10 - m0 - m5 ) * 2;
+            q[1] = -(m2 + m8 ) / S;
+            q[2] = -(m9 + m6 ) / S;
+            q[3] = -0.25 * S;
+            q[0] = (m4 - m1 ) / S;
+        }
+
+        double mag2 = 0;
+        for (int i = 0; i < 4; i++)
+            mag2 += q[i]*q[i];
+        double norm = 1.0 / sqrtf(mag2);
+        for (int i = 0; i < 4; i++)
+            q[i] *= norm;
     }
-
-    double mag2 = 0;
-    for (int i = 0; i < 4; i++)
-        mag2 += q[i]*q[i];
-    double norm = 1.0 / sqrtf(mag2);
-    for (int i = 0; i < 4; i++)
-        q[i] *= norm;
-}
-*/
+    */
 
 // overwrites upper 3x3 area of matrix M. Doesn't touch any other elements of M.
 void quat_to_matrix(const double q[4], matd_t *M)
