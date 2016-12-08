@@ -32,6 +32,11 @@ message( "-->CMAKE_BUILD_DIRECTORY=\n${CMAKE_BUILD_DIRECTORY}\n")
 find_package( OpenCV REQUIRED )
 find_package(VISP REQUIRED)
 
+
+message("--> include_directories...\n")
+message("--> catkin_INCLUDE_DIRS: ${catkin_INCLUDE_DIRS}")
+#message("--> Eigen_INCLUDE_DIRS: ${Eigen_INCLUDE_DIRS}")
+#include_directories(include)
 include_directories("/home/fschiano/Repositories/apriltag2")
 include_directories("/home/fschiano/Repositories/apriltag2/common")
 #include_directories("usr/local")
@@ -41,14 +46,14 @@ add_executable( opencvDemo_exe opencv_demo.cc )
 include_directories(${VISP_INCLUDE_DIRS})
 
 #DEBUG
-message( "-->VISP_INCLUDE_DIRS=\n${VISP_INCLUDE_DIRS}\n")
-message( "-->VISP_LIBRARIES=\n${VISP_LIBRARIES}\n")
-message("-->CMAKE_BINARY_DIR: ${CMAKE_BINARY_DIR}")
-message("-->CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}")
+message( "-->VISP_INCLUDE_DIRS= ${VISP_INCLUDE_DIRS}")
+message( "-->VISP_LIBRARIES= ${VISP_LIBRARIES}")
+message("-->CMAKE_BINARY_DIR= ${CMAKE_BINARY_DIR}")
+message("-->CMAKE_CURRENT_SOURCE_DIR= ${CMAKE_CURRENT_SOURCE_DIR}")
 
 set(apriltagSharedLibrary ${CMAKE_CURRENT_SOURCE_DIR}/lib/libapriltag.so)
 message("-->apriltagSharedLibrary: ${apriltagSharedLibrary}")
 
 # Needed libraries
-set (EXTRA_LIBS ${apriltagSharedLibrary} flycapture ${OpenCV_LIBS} ${VISP_LIBRARIES})
-target_link_libraries( opencvDemo_exe ${EXTRA_LIBS} )
+set (EXTRA_LIBS ${apriltagSharedLibrary} flycapture ${OpenCV_LIBS} ${VISP_LIBRARIES} ${catkin_LIBRARIES})
+target_link_libraries( opencvDemo_exe ${EXTRA_LIBS})
