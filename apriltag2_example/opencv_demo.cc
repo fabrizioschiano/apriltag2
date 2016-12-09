@@ -59,6 +59,14 @@
 #include "ros/ros.h"
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/PoseArray.h>
+#include "std_msgs/String.h"
+
+#include <apriltag2_example/AprilTagDetection.h>
+#include <apriltag2_example/AprilTagDetectionArray.h>
+
+#include <Eigen/Core>
+#include <tf/transform_datatypes.h>
+//#include <transform_datatypes.h>
 
 // ViSP includes
 //#include <visp/vpDisplayGDI.h>
@@ -112,6 +120,17 @@ using namespace FlyCapture2;
 
 int main(int argc, char *argv[])
 {
+    //    ROS PART
+    cout<< "######################  ROS  ######################"<<endl <<endl;
+    cout<<"-->Initializing ROS..."<<endl;
+    ros::init(argc, argv, "apriltag2Node"); // The third element is the name of the node
+    cout<<"-->done!"<<endl;
+    cout<<"-->Initializing NODE..."<<endl;
+    ros::NodeHandle nh;
+    cout<<"-->done!"<<endl;
+    //    ros::Publisher chatter_pub = nh.advertise<std_msgs::String>("apriltag2_pose",1000);
+    ros::Publisher detections_pub_ = nh.advertise<apriltag2_example::AprilTagDetectionArray>("apriltag2_tag_detections", 1000);
+    ros::Rate loop_rate(10);
     cout<<"OpenCV Version used:"<<CV_MAJOR_VERSION<<"."<<CV_MINOR_VERSION<<"."<<CV_SUBMINOR_VERSION<<endl;
 
     cout<<endl<<"Creating getopt"<<endl;
@@ -194,7 +213,7 @@ int main(int argc, char *argv[])
     cout<<"FamilyName:"<<*famname<<endl;
     cout << "Creating apriltag_detector..." << endl;
     apriltag_detector_t *td = apriltag_detector_create();
-    while(key != 'q')
+    while(key != 'q' && ros::master::check())
     {
         // Get the image
         Image rawImage;
@@ -237,6 +256,12 @@ int main(int argc, char *argv[])
         // In the following variable it will be put the coordinates of the center of the tag
         double cog [2];
 
+        std_msgs::String message;
+        std::stringstream ss1;
+        ss1<<"helloworld ";
+        message.data = ss1.str();
+        ROS_INFO("%s",message.data.c_str());
+
         //        vpImage<unsigned char> I;
         //        vpImageIo::read( rawImage );
         //        std::vector<vpPoint> point(4);
@@ -245,10 +270,10 @@ int main(int argc, char *argv[])
         //        vpHomogeneousMatrix cMo;
 
         bool init = true;
-        double tagsize = 0.086;
+        double tagsize = 0.167;
 
         Mat frame, gray;
-        while (!key) {
+        while (!key && ros::master::check()) {
             // Get the image
             Image rawImage;
             Error error = camera.RetrieveBuffer( &rawImage );
@@ -358,8 +383,8 @@ int main(int argc, char *argv[])
 
                 //Set points coordinates
 
-                double dist_point_=0.086;
-
+                //                double dist_point_=0.167;
+                double tag_size = tagsize;
                 //                point[0].setWorldCoordinates(-dist_point_,dist_point_, 0) ;
                 //                point[1].setWorldCoordinates(dist_point_,dist_point_, 0) ;
                 //                point[2].setWorldCoordinates(dist_point_,-dist_point_, 0) ;
@@ -392,6 +417,12 @@ int main(int argc, char *argv[])
                 //                computePose( point,  corners,  cam, init,  cMo);
 
                 // Try to get the position of the tag w.r.t. the camera
+
+
+                apriltag2_example::AprilTagDetectionArray tag_detection_array;
+                geometry_msgs::PoseArray tag_pose_array;
+                //                tag_pose_array.header = cv_ptr->header;
+
                 for (int i = 0; i < zarray_size(detections); i++) {
                     apriltag_detection_t *det;
                     zarray_get(detections, i, &det);
@@ -402,8 +433,46 @@ int main(int argc, char *argv[])
                     MATD_EL(M, 1, 3) *= scale;
                     MATD_EL(M, 2, 3) *= scale;
 
+                    // ROS PART
+                    // Eigen::Matrix4d transform = detection.getRelativeTransform(tag_size, fx, fy, px, py);
+                    // Eigen::Matrix3d rot = transform.block(0, 0, 3, 3);
+                    //MatrixXd eigenX = Map<MatrixXd>( X, nRows, nCols );
+                    //                    Eigen::Matrix4d transform = Eigen::Map<Eigen::Matrix4d>transform(M->data,M->nrows,M->ncols);
+                    Eigen::Map<Eigen::Matrix4d>transform(M->data);
+                    //                    Map<Matrix4d> transform(M->data);
+                    //                    cout<<"transform: " << transform.data();
+                    //                    Eigen::Matrix3d rot = transform.block(0, 0, 3, 3);
+                    //                    Eigen::Quaternion<double> rot_quaternion = Eigen::Quaternion<double>(rot);
+                    geometry_msgs::PoseStamped tag_pose;
+                    tag_pose.pose.position.x = MATD_EL(M, 0, 3);
+                    tag_pose.pose.position.y = MATD_EL(M, 1, 3);
+                    tag_pose.pose.position.z = MATD_EL(M, 2, 3);
+                    //                    tag_pose.pose.orientation.x = rot_quaternion.x();
+                    //                    tag_pose.pose.orientation.y = rot_quaternion.y();
+                    //                    tag_pose.pose.orientation.z = rot_quaternion.z();
+                    //                    tag_pose.pose.orientation.w = rot_quaternion.w();
+                    //                    tag_pose.header = cv_ptr->header;
+
+                    apriltag2_example::AprilTagDetection tag_detection;
+                    tag_detection.pose = tag_pose;
+                    //                    tag_detection.id = detection.id;
+                    tag_detection.id = det->id;
+                    tag_detection.size = tag_size;
+                    tag_detection_array.detections.push_back(tag_detection);
+                    tag_pose_array.poses.push_back(tag_pose.pose);
+
+                    tf::Stamped<tf::Transform> tag_transform;
+                    tf::poseStampedMsgToTF(tag_pose, tag_transform);
+                    //                    tf_pub_.sendTransform(tf::StampedTransform(tag_transform, tag_transform.stamp_, tag_transform.frame_id_, description.frame_name()));
+                    //                    chatter_pub.publish(message);
+
                     cout << "Detection " << i << ": [" << MATD_EL(M, 0, 3) << ", " << MATD_EL(M, 1, 3) << ", " << MATD_EL(M, 2, 3) << "]" << endl;
                 }
+                detections_pub_.publish(tag_detection_array);
+
+
+                //                ros::spinOnce();
+                //                loop_rate.sleep();
                 //                vpTranslationVector trans;
                 //                double x = cMo[0][1];
                 //                double y = cMo[1][3];
