@@ -1,0 +1,8 @@
+prefix=/home/fschiano/Repositories/apriltag2/apriltag2_example/_build/devel
+
+Name: apriltag2_example
+Description: Description of apriltag2_example
+Version: 0.0.0
+Cflags: -I/home/fschiano/Repositories/apriltag2/apriltag2_example/_build/devel/include -I/home/fschiano/Repositories/apriltag2/apriltag2_example/include -I/usr/include/eigen3
+Libs: -L/home/fschiano/Repositories/apriltag2/apriltag2_example/_build/devel/lib 
+Requires: image_transport roscpp sensor_msgs geometry_msgs tf cv_bridge message_runtime nodelet std_msgs
