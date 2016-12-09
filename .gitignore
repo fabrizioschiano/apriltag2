@@ -3,6 +3,12 @@
 opencvDemo
 *apriltag_demo
 
+
+
+*.stamp
+
+apriltag2_example/_build/catkin_generated/setup_cached.sh
+
 *CMakeLists.txt.user
 *.cbp
 
