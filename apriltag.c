@@ -1001,7 +1001,7 @@ void apriltag_detection_destroy(apriltag_detection_t *det)
 
 zarray_t *apriltag_detector_detect(apriltag_detector_t *td, image_u8_t *im_orig)
 {
-    printf("In apriltag_detector_detect\n");
+    // printf("In apriltag_detector_detect\n");
     if (zarray_size(td->tag_families) == 0) {
         zarray_t *s = zarray_create(sizeof(apriltag_detection_t*));
         printf("apriltag.c: No tag families enabled.");
