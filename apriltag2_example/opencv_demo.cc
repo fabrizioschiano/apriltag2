@@ -194,9 +194,10 @@ int main(int argc, char *argv[])
     //		return false;
     //	}
     //////////////////////////////////////
+    char key = 0;
 
     // capture loop
-    char key = 0;
+
     // Initialize tag detector with options
     apriltag_family_t *tf = NULL;
     const char *famname = getopt_get_string(getopt, "family");
