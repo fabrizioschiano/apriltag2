@@ -39,6 +39,7 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include "opencv2/opencv.hpp"
+#include <cv_bridge/cv_bridge.h>
 
 // Include for the flycapture, to work with the FLEA camera
 #include "flycapture/FlyCapture2.h"
@@ -59,7 +60,10 @@
 #include "ros/ros.h"
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/PoseArray.h>
+#include <sensor_msgs/Image.h>
+#include <sensor_msgs/image_encodings.h>
 #include "std_msgs/String.h"
+#include <image_transport/image_transport.h>
 
 #include <apriltag2_example/AprilTagDetection.h>
 #include <apriltag2_example/AprilTagDetectionArray.h>
@@ -81,41 +85,19 @@ using namespace std;
 using namespace cv;
 using namespace FlyCapture2;
 
-// This is a function I found on Giovanni's code.
-//void computePose(std::vector<vpPoint> &point, const std::vector<vpImagePoint> &corners,
-//                 const vpCameraParameters &cam, bool &init, vpHomogeneousMatrix &cMo)
-//{
-//    vpPose pose;
-//    double x=0, y=0;
-//    cout << __LINE__ << endl;
-//    for (unsigned int i=0; i < point.size(); i ++) {
-//        vpPixelMeterConversion::convertPoint(cam, corners[i], x, y);
-//        point[i].set_x(x);
-//        point[i].set_y(y);
-//        pose.addPoint(point[i]);
-//    }
-//    cout << __LINE__ << endl;
 
-//    if (init) {
-//        cout << "------In Init------" << endl;
-//        vpHomogeneousMatrix cMo_dementhon, cMo_lagrange;
-//        cout << __LINE__ << endl;
-//        pose.computePose(vpPose::DEMENTHON_VIRTUAL_VS, cMo_dementhon);
-//        cout << __LINE__ << endl;
-//        double residual_dementhon = pose.computeResidual(cMo_dementhon);
-//        cout << __LINE__ << endl;
-//        pose.computePose(vpPose::LAGRANGE_VIRTUAL_VS, cMo_lagrange);
-//        double residual_lagrange = pose.computeResidual(cMo_lagrange);
-//        if (residual_dementhon < residual_lagrange)
-//            cMo = cMo_dementhon;
-//        else
-//            cMo = cMo_lagrange;
-//        cout << __LINE__ << endl;
-//    }
-
-//    pose.computePose(vpPose::VIRTUAL_VS, cMo) ;
-//    init = false;
-//}
+void imageCallback(const sensor_msgs::ImageConstPtr& msg)
+{
+    try
+    {
+        cv::imshow("view", cv_bridge::toCvShare(msg, "bgr8")->image);
+        cv::waitKey(30);
+    }
+    catch (cv_bridge::Exception& e)
+    {
+        ROS_ERROR("Could not convert from '%s' to 'bgr8'.", msg->encoding.c_str());
+    }
+}
 
 
 int main(int argc, char *argv[])
@@ -130,7 +112,13 @@ int main(int argc, char *argv[])
     cout<<"-->done!"<<endl;
     //    ros::Publisher chatter_pub = nh.advertise<std_msgs::String>("apriltag2_pose",1000);
     ros::Publisher detections_pub_ = nh.advertise<apriltag2_example::AprilTagDetectionArray>("apriltag2_tag_detections", 1000);
-    ros::Rate loop_rate(10);
+    ros::Rate loop_rate(100);
+
+//    cv::namedWindow("view");
+//    cv::startWindowThread();
+//    image_transport::ImageTransport it(nh);
+//    image_transport::Subscriber sub = it.subscribe("camera/image_raw", 1, imageCallback);
+
     cout<<"OpenCV Version used:"<<CV_MAJOR_VERSION<<"."<<CV_MINOR_VERSION<<"."<<CV_SUBMINOR_VERSION<<endl;
 
     cout<<endl<<"Creating getopt"<<endl;
@@ -157,9 +145,11 @@ int main(int argc, char *argv[])
     }
 
     //////////////////////FlyCapture
+
     Error error;
     Camera camera;
     CameraInfo camInfo;
+
 
     // Connect the camera
     error = camera.Connect( 0 ); // Probably I need to change here if I have 2 cameras and I want to connect to a specific one.
@@ -169,16 +159,16 @@ int main(int argc, char *argv[])
         return false;
     }
 
-
     // Get the camera info and print it out
     error = camera.GetCameraInfo( &camInfo );
-
+    //    camera_sub_.
     //		cout << "GetCameraInfo:" << error << endl;
     if ( error != PGRERROR_OK )
     {
         cout << "Failed to get camera info from camera" << endl;
         return false;
     }
+
     cout << "Starting to capture with the camera:" << endl;
     cout << "["<< camInfo.vendorName << " "
          << camInfo.modelName << " "
@@ -213,16 +203,11 @@ int main(int argc, char *argv[])
     cout<<"FamilyName:"<<*famname<<endl;
     cout << "Creating apriltag_detector..." << endl;
     apriltag_detector_t *td = apriltag_detector_create();
+
+
     while(key != 'q' && ros::master::check())
     {
-        // Get the image
-        Image rawImage;
-        Error error = camera.RetrieveBuffer( &rawImage );
-        if ( error != PGRERROR_OK )
-        {
-            std::cout << "capture error" << std::endl;
-            continue;
-        }
+
 
         // AprilTAG
         if (!strcmp(famname, "tag36h11"))
@@ -253,6 +238,7 @@ int main(int argc, char *argv[])
         td->refine_decode = getopt_get_bool(getopt, "refine-decode");
         td->refine_pose = getopt_get_bool(getopt, "refine-pose");
 
+
         // In the following variable it will be put the coordinates of the center of the tag
         double cog [2];
 
@@ -270,9 +256,12 @@ int main(int argc, char *argv[])
         //        vpHomogeneousMatrix cMo;
 
         bool init = true;
-        double tagsize = 0.167;
+//        double tagsize = 0.167;
+//        double tagsize = 0.173;
+        double tagsize = 0.162;
 
         Mat frame, gray;
+
         while (!key && ros::master::check()) {
             // Get the image
             Image rawImage;
@@ -324,44 +313,27 @@ int main(int argc, char *argv[])
                         Point(det->p[3][0], det->p[3][1]),
                         Scalar(0xff, 0, 0), 2);
                 cout<<"["<<det->c[0]<<","<<det->c[1]<<"]"<<endl;
-                // cout << "( " << det->p[0][0] << " )";
-                // det->p is [4][2]
                 cout << "Points: " << endl;
-                for (int var1 = 0; var1 < 4; ++var1) {
-                    cout << "Point: " << var1 <<endl;
-                    cout << ":::::( " << det->p[var1][0] <<","<<det->p[var1][1] << " ):::::"<<endl;
-                }
-
-
+                //                for (int var1 = 0; var1 < 4; ++var1) {
+                //                    cout << "Point: " << var1 <<endl;
+                //                    cout << ":::::( " << det->p[var1][0] <<","<<det->p[var1][1] << " ):::::"<<endl;
+                //                }
                 computeCoG(det->p,cog);
                 cout << "COG: "<< "[" <<cog[0] << "," << cog[1] << "]"<<endl;
-
                 // The following is what will be written on the image (in the tag)
                 stringstream ss;
                 ss << det->id;
-
-                cout <<"Line:"<< __LINE__<<endl;
-
-                //            cout << det->H<<endl;
-                //				*det->H H[0][]
-                cout << "-------------" <<endl;
                 cout << "det->H->data" <<endl;
                 for (int j = 0; j < det->H->ncols; ++j) {
                     cout << "["<<det->H->data[j+2*j]<<","<< det->H->data[(j+1)+2*j] << ","<< det->H->data[(j+2)+2*j]<<"]" << endl;
                 }
-                cout << "-------------" <<endl;
                 cout << det->H->data[0]<<endl;
                 cout << det->H->ncols  <<endl;
                 cout << det->H->nrows  <<endl;
-                //				cout << det->H  <<endl;
-                //matd_t *matd = matd_create(3,3);
-                //                matd_t * ciao = new matd_t;
                 //                double camera_matrix [9] = {687.216761, 0.000000, 1111.575057, 0.000000, 673.787664, 747.109306, 0.000000, 0.000000, 1.000000};
                 double camera_matrix [9] = {345.604974, 0.000000, 541.032467, 0.000000, 345.272041, 371.544205, 0.000000, 0.000000, 1.000000};
-                cout << "Trying to compute TEMPORARYVAR" <<endl;
                 double fx,fy,cx,cy;
                 fx=camera_matrix[0];
-                cout << "fx(before entering the homography_to_pose): "<<fx<<endl;
                 fy=camera_matrix[4];
                 cx=camera_matrix[2];
                 cy=camera_matrix[5];
@@ -385,24 +357,6 @@ int main(int argc, char *argv[])
 
                 //                double dist_point_=0.167;
                 double tag_size = tagsize;
-                //                point[0].setWorldCoordinates(-dist_point_,dist_point_, 0) ;
-                //                point[1].setWorldCoordinates(dist_point_,dist_point_, 0) ;
-                //                point[2].setWorldCoordinates(dist_point_,-dist_point_, 0) ;
-                //                point[3].setWorldCoordinates(-dist_point_,-dist_point_,0) ;
-                //                                        cout << td->quad_decimate << endl ;
-                //                <!--Pixel ratio-->
-                //                <px>680.5800990142</px>
-                //                <py>680.9840738923</py>
-                //                double px = 680.5800990142;
-                //                double py = 680.9840738923;
-                //                double u0 = 1920/td->quad_decimate;
-                //                double v0 = 1080/td->quad_decimate;
-                //                cout << "(u0,v0): " << "(" <<u0 <<","<<v0<<")"<<endl;
-                //                // Create a camera parameter container
-                //                vpCameraParameters cam;
-                // Camera initialization with a perspective projection without distortion model
-                //                cam.initPersProjWithoutDistortion(px,py,u0,v0);
-
 
                 // It is also possible to print the current camera parameters
                 //                std::cout << cam << std::endl;
@@ -418,11 +372,9 @@ int main(int argc, char *argv[])
 
                 // Try to get the position of the tag w.r.t. the camera
 
-
                 apriltag2_example::AprilTagDetectionArray tag_detection_array;
                 geometry_msgs::PoseArray tag_pose_array;
                 //                tag_pose_array.header = cv_ptr->header;
-
                 for (int i = 0; i < zarray_size(detections); i++) {
                     apriltag_detection_t *det;
                     zarray_get(detections, i, &det);
@@ -471,25 +423,19 @@ int main(int argc, char *argv[])
                 detections_pub_.publish(tag_detection_array);
 
 
-                //                ros::spinOnce();
-                //                loop_rate.sleep();
-                //                vpTranslationVector trans;
-                //                double x = cMo[0][1];
-                //                double y = cMo[1][3];
-                //                double z = cMo[2][3];
-                //            cMo.extract(trans);
-                //                cout << "cMo.data: [" << x << "," << y << "," << z << "]" << endl;
+                ros::spinOnce();
+                loop_rate.sleep();
             }
             zarray_destroy(detections);
-
+            cv::destroyWindow("view");
             imshow("Tag Detections", frame);
             if (waitKey(30) >= 0)
                 break;
         }
-
         // cv::imshow("image", image);
         key = cv::waitKey(30);
     }
+
 
     //	Destruction of the apriltag_detector
     apriltag_detector_destroy(td);
