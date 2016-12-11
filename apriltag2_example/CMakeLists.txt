@@ -76,6 +76,7 @@ include_directories("/home/fschiano/Repositories/apriltag2/common")
 #include_directories("usr/local")
 find_library(FLYCAPTURE2 flycapture)
 add_executable( opencvDemo_exe opencv_demo.cc )
+add_executable( test_sub test_subscriber.cpp )
 
 include_directories(${VISP_INCLUDE_DIRS})
 include_directories(${EIGEN3_INCLUDE_DIR})
@@ -90,7 +91,9 @@ message("-->apriltagSharedLibrary: ${apriltagSharedLibrary}")
 
 # Needed libraries
 set (EXTRA_LIBS ${apriltagSharedLibrary} flycapture ${OpenCV_LIBS} ${VISP_LIBRARIES} ${catkin_LIBRARIES})
+
 target_link_libraries( opencvDemo_exe ${EXTRA_LIBS})
+target_link_libraries( test_sub ${EXTRA_LIBS})
 
 
 # 
