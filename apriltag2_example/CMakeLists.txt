@@ -18,13 +18,6 @@ project(apriltag2_example)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 
-# find_package(catkin REQUIRED COMPONENTS
-#   roscpp
-#   rospy
-#   std_msgs
-# )
-
-
 find_package(catkin REQUIRED COMPONENTS
   image_transport
   roscpp
@@ -36,6 +29,7 @@ find_package(catkin REQUIRED COMPONENTS
   nodelet
   std_msgs
   cmake_modules
+  message_filters
 )
 
 find_package(Eigen REQUIRED)
@@ -56,35 +50,41 @@ generate_messages(
 
 catkin_package(
   INCLUDE_DIRS include
-  # LIBRARIES apriltag_detector
+  LIBRARIES test_subscriber
   CATKIN_DEPENDS image_transport roscpp sensor_msgs geometry_msgs tf cv_bridge message_runtime nodelet std_msgs
   DEPENDS Eigen
 )
+include_directories(include)
+include_directories("/home/fschiano/Repositories/apriltag2")
+include_directories("/home/fschiano/Repositories/apriltag2/common")
+#include_directories(${VISP_INCLUDE_DIRS})
+include_directories(${EIGEN3_INCLUDE_DIR})
+
+# Declare a cpp library
+add_library(test_subscriber
+  include/test_subscriber.h
+  test_subscriber.cpp
+)
 
 
-set( CMAKE_BUILD_TYPE Release)
-set( CMAKE_BUILD_DIRECTORY "/home/fschiano/Repositories/apriltag2/apriltag2_example/_build")
 
 #DEBUG
 message( "-->CMAKE_BUILD_DIRECTORY=\n${CMAKE_BUILD_DIRECTORY}\n")
 message("--> include_directories...\n")
 message("--> catkin_INCLUDE_DIRS: ${catkin_INCLUDE_DIRS}")
 message("--> Eigen_INCLUDE_DIRS: ${Eigen_INCLUDE_DIRS}")
-#include_directories(include)
-include_directories("/home/fschiano/Repositories/apriltag2")
-include_directories("/home/fschiano/Repositories/apriltag2/common")
-#include_directories("usr/local")
-find_library(FLYCAPTURE2 flycapture)
-add_executable( opencvDemo_exe opencv_demo.cc )
-add_executable( test_sub test_subscriber.cpp )
-
-include_directories(${VISP_INCLUDE_DIRS})
-include_directories(${EIGEN3_INCLUDE_DIR})
 #DEBUG
-message( "-->VISP_INCLUDE_DIRS= ${VISP_INCLUDE_DIRS}")
-message( "-->VISP_LIBRARIES= ${VISP_LIBRARIES}")
+#message( "-->VISP_INCLUDE_DIRS= ${VISP_INCLUDE_DIRS}")
+#message( "-->VISP_LIBRARIES= ${VISP_LIBRARIES}")
 message("-->CMAKE_BINARY_DIR= ${CMAKE_BINARY_DIR}")
 message("-->CMAKE_CURRENT_SOURCE_DIR= ${CMAKE_CURRENT_SOURCE_DIR}")
+
+set( CMAKE_BUILD_TYPE Release)
+set( CMAKE_BUILD_DIRECTORY "/home/fschiano/Repositories/apriltag2/apriltag2_example/_build")
+
+find_library(FLYCAPTURE2 flycapture)
+
+add_executable( opencvDemo_exe opencv_demo.cc )
 
 set(apriltagSharedLibrary ${CMAKE_CURRENT_SOURCE_DIR}/lib/libapriltag.so)
 message("-->apriltagSharedLibrary: ${apriltagSharedLibrary}")
@@ -93,7 +93,10 @@ message("-->apriltagSharedLibrary: ${apriltagSharedLibrary}")
 set (EXTRA_LIBS ${apriltagSharedLibrary} flycapture ${OpenCV_LIBS} ${VISP_LIBRARIES} ${catkin_LIBRARIES})
 
 target_link_libraries( opencvDemo_exe ${EXTRA_LIBS})
-target_link_libraries( test_sub ${EXTRA_LIBS})
+
+target_link_libraries( test_subscriber ${EXTRA_LIBS})
+#add_executable( test_sub test_subscriber.cpp )
 
 
-# 
+add_executable(test_subscriber_node main_test_sub.cpp)
+target_link_libraries( test_subscriber_node ${EXTRA_LIBS} test_subscriber)
