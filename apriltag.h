@@ -262,10 +262,10 @@ static inline void apriltag_detector_add_family(apriltag_detector_t *td, aprilta
     // Fabrizio: I added this part to remove the too many false positives when using the
     //           tag16h5 family
     if (!strcmp(fam->name,"tag16h5")) {
-        printf("-->FamilyName: %s\n Choose bits_corrected = 0", fam->name);
+//        printf("-->FamilyName: %s\n Choose bits_corrected = 0", fam->name);
         apriltag_detector_add_family_bits(td, fam, 0);
     } else {
-        printf("-->FamilyName: %s\n Choose bits_corrected = 2", fam->name);
+//        printf("-->FamilyName: %s\n Choose bits_corrected = 2", fam->name);
         apriltag_detector_add_family_bits(td, fam, 2);
     }
 
