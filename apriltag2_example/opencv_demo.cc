@@ -284,14 +284,16 @@ int main(int argc, char *argv[])
 
             frame = image;
             cvtColor(frame, gray, COLOR_BGR2GRAY);
+            cout << "frame.cols:" << frame.cols << endl; // This is the width of the image
+            cout << "frame.rows:" << frame.rows << endl; // This is the height of the image
+//            cout << "frame.data:" << frame.data << endl;
 
+            cout << "gray.cols:" << gray.cols << endl; // This is the width of the image
+            cout << "gray.rows:" << gray.rows << endl; // This is the height of the image
+//            cout << "gray.data:" << frame.data << endl;
             // Make an image_u8_t header for the Mat data
-            image_u8_t im = { .width = gray.cols,
-                              .height = gray.rows,
-                              .stride = gray.cols,
-                              .buf = gray.data
-                            };
-
+            image_u8_t im = { .width = gray.cols,.height = gray.rows,.stride = gray.cols,.buf = gray.data};
+//            image_u8_t im
             zarray_t *detections = apriltag_detector_detect(td, &im);
             // cout << detections->data;
             cout << zarray_size(detections) << " tags detected" << endl;
