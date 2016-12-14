@@ -1,6 +1,18 @@
 #include "node.h"
 #include "names.h"
 //#include "boost\thread\mutex.hpp"
+// Include for the apriltags
+#include "/apriltag2/apriltag.h"
+#include "tag36h11.h"
+#include "tag36h10.h"
+#include "tag36artoolkit.h"
+#include "tag25h9.h"
+#include "tag25h7.h"
+#include "tag16h5.h"
+#include "apriltag2_example/AprilTagDetection.h"
+#include "apriltag2_example/AprilTagDetectionArray.h"
+
+
 
 // Namespaces
 using namespace std;
@@ -90,11 +102,12 @@ void Node::spin(int argc, char** argv){
     //wait for an image to be ready
     ROS_INFO("waiting for IMAGE...");
     waitForImage();
-    ROS_INFO("...Finished waiting for IMAGE!!");
+    {
+        ROS_INFO("...Finished waiting for IMAGE!!");
 
-    //when an image is ready ....
-    boost::mutex::scoped_lock(lock_);
-
+        //when an image is ready ....
+        boost::mutex::scoped_lock(lock_);
+    }
 
     cout<<endl<<"Creating getopt"<<endl;
     getopt_t *getopt = getopt_create();
@@ -237,181 +250,185 @@ void Node::spin(int argc, char** argv){
 
         Mat frame, gray;
 
-        while (!key && ros::master::check()) {
-            // Get the image
-            Image rawImage;
-            //            Error error = camera.RetrieveBuffer( &rawImage );
-            //            if ( error != PGRERROR_OK )
-            //            {
-            //                std::cout << "capture error" << std::endl;
-            //                continue;
-            //            }
+        while (!key && ros::ok()) {
+            if (true)
+            {
+                std::cout<<"-------------------->IN THE IF"<<endl;
+                // Get the image
+                //                Image rawImage;
+                //            Error error = camera.RetrieveBuffer( &rawImage );
+                //            if ( error != PGRERROR_OK )
+                //            {
+                //                std::cout << "capture error" << std::endl;
+                //                continue;
+                //            }
 
-            // convert to rgb
-            //            Image rgbImage;
-            //            rawImage.Convert( FlyCapture2::PIXEL_FORMAT_BGR, &rgbImage );
+                // convert to rgb
+                //            Image rgbImage;
+                //            rawImage.Convert( FlyCapture2::PIXEL_FORMAT_BGR, &rgbImage );
 
-            // convert to OpenCV Mat
-            //            unsigned int rowBytes = (double)rgbImage.GetReceivedDataSize()/(double)rgbImage.GetRows();
-            //            cv::Mat image = cv::Mat(rgbImage.GetRows(), rgbImage.GetCols(), CV_8UC3, rgbImage.GetData(),rowBytes);
-            cv::Mat image = cv_ptr->image;
-            //            cap >> frame;
+                // convert to OpenCV Mat
+                //            unsigned int rowBytes = (double)rgbImage.GetReceivedDataSize()/(double)rgbImage.GetRows();
+                //            cv::Mat image = cv::Mat(rgbImage.GetRows(), rgbImage.GetCols(), CV_8UC3, rgbImage.GetData(),rowBytes);
+                boost::mutex::scoped_lock(lock_);
+                cv::Mat image = cv_ptr->image;
+                //            cap >> frame;
 
-            frame = image;
-            //            cvtColor(frame, gray, COLOR_BGR2GRAY);
-            cout << "frame.cols:" << frame.cols << endl; // This is the width of the image
-            cout << "frame.rows:" << frame.rows << endl; // This is the height of the image
-            cout << "frame.data:" << frame.data << endl;
+                frame = image;
+                cv::cvtColor(frame, gray, COLOR_BGR2GRAY);
+                cout << "frame.cols:" << frame.cols << endl; // This is the width of the image
+                cout << "frame.rows:" << frame.rows << endl; // This is the height of the image
+//                cout << "frame.data:" << frame.data << endl;
+                // Make an image_u8_t header for the Mat data
+                image_u8_t im = { .width = frame.cols,
+                                  .height = frame.rows,
+                                  .stride = frame.cols,
+                                  .buf = frame.data
+                                };
 
-            // Make an image_u8_t header for the Mat data
-            image_u8_t im = { .width = frame.cols,
-                              .height = frame.rows,
-                              .stride = frame.cols,
-                              .buf = frame.data
-                            };
+                zarray_t *detections = apriltag_detector_detect(td, &im);
+                // cout << detections->data;
+                cout << zarray_size(detections) << " tags detected" << endl;
 
-            zarray_t *detections = apriltag_detector_detect(td, &im);
-            // cout << detections->data;
-            cout << zarray_size(detections) << " tags detected" << endl;
-
-            // Draw detection outlines
-            for (int i = 0; i < zarray_size(detections); i++) {
-                apriltag_detection_t *det;
-                zarray_get(detections, i, &det);
-                line(frame, Point(det->p[0][0], det->p[0][1]),
-                        Point(det->p[1][0], det->p[1][1]),
-                        Scalar(0, 0xff, 0), 2);
-                line(frame, Point(det->p[0][0], det->p[0][1]),
-                        Point(det->p[3][0], det->p[3][1]),
-                        Scalar(0, 0, 0xff), 2);
-                line(frame, Point(det->p[1][0], det->p[1][1]),
-                        Point(det->p[2][0], det->p[2][1]),
-                        Scalar(0xff, 0, 0), 2);
-                line(frame, Point(det->p[2][0], det->p[2][1]),
-                        Point(det->p[3][0], det->p[3][1]),
-                        Scalar(0xff, 0, 0), 2);
-                cout<<"["<<det->c[0]<<","<<det->c[1]<<"]"<<endl;
-                cout << "Points: " << endl;
-                //                for (int var1 = 0; var1 < 4; ++var1) {
-                //                    cout << "Point: " << var1 <<endl;
-                //                    cout << ":::::( " << det->p[var1][0] <<","<<det->p[var1][1] << " ):::::"<<endl;
-                //                }
-
-                //                computeCoG(det->p,cog);
-                //                cout << "COG: "<< "[" <<cog[0] << "," << cog[1] << "]"<<endl;
-                //                // The following is what will be written on the image (in the tag)
-                stringstream ss;
-                ss << det->id;
-                cout << "det->H->data" <<endl;
-                for (int j = 0; j < det->H->ncols; ++j) {
-                    cout << "["<<det->H->data[j+2*j]<<","<< det->H->data[(j+1)+2*j] << ","<< det->H->data[(j+2)+2*j]<<"]" << endl;
-                }
-                cout << det->H->data[0]<<endl;
-                cout << det->H->ncols  <<endl;
-                cout << det->H->nrows  <<endl;
-                //                double camera_matrix [9] = {687.216761, 0.000000, 1111.575057, 0.000000, 673.787664, 747.109306, 0.000000, 0.000000, 1.000000};
-                double camera_matrix [9] = {345.604974, 0.000000, 541.032467, 0.000000, 345.272041, 371.544205, 0.000000, 0.000000, 1.000000};
-                double fx,fy,cx,cy;
-                fx=camera_matrix[0];
-                fy=camera_matrix[4];
-                cx=camera_matrix[2];
-                cy=camera_matrix[5];
-                //                double temporaryVar = homography_to_pose(det->H,-fx,-fy,cx,cy)->data[1];
-                //                cout << "TEMPORARYVAR: " << temporaryVar << endl;
-                // This is the text which is put on the image
-                String text = ss.str();
-                int fontface = FONT_HERSHEY_SCRIPT_SIMPLEX;
-                double fontscale = 1.0;
-                int baseline;
-                Size textsize = getTextSize(text, fontface, fontscale, 2,
-                                            &baseline);
-                putText(frame, text, Point(det->c[0]-textsize.width/2,
-                        det->c[1]+textsize.height/2),
-                        fontface, fontscale, Scalar(0xff, 0x99, 0), 2);
-
-                //                cout<<"::::::::::::::::"<<dot.at(3) << endl;
-                //                dot.assign( = 190;
-
-                //Set points coordinates
-
-                //                double dist_point_=0.167;
-                double tag_size = tagsize;
-
-                // It is also possible to print the current camera parameters
-                //                std::cout << cam << std::endl;
-                //                cout <<"-------------------"<<corners.front() << endl;
-
-                //                for (int var3 = 0; var3 < 3; ++var3) {
-                //                    corners[i].set_u(det->p[i][0]);
-                //                    corners[i].set_v(det->p[i][1]);
-                //                }
-                //                cMo.eye();
-                //                cout <<"-----------   --------"<<corners.front() << endl;
-                //                computePose( point,  corners,  cam, init,  cMo);
-
-                // Try to get the position of the tag w.r.t. the camera
-
-                apriltag2_example::AprilTagDetectionArray tag_detection_array;
-                geometry_msgs::PoseArray tag_pose_array;
-                //                tag_pose_array.header = cv_ptr->header;
+                // Draw detection outlines
                 for (int i = 0; i < zarray_size(detections); i++) {
                     apriltag_detection_t *det;
                     zarray_get(detections, i, &det);
+                    line(frame, Point(det->p[0][0], det->p[0][1]),
+                            Point(det->p[1][0], det->p[1][1]),
+                            Scalar(0, 0xff, 0), 2);
+                    line(frame, Point(det->p[0][0], det->p[0][1]),
+                            Point(det->p[3][0], det->p[3][1]),
+                            Scalar(0, 0, 0xff), 2);
+                    line(frame, Point(det->p[1][0], det->p[1][1]),
+                            Point(det->p[2][0], det->p[2][1]),
+                            Scalar(0xff, 0, 0), 2);
+                    line(frame, Point(det->p[2][0], det->p[2][1]),
+                            Point(det->p[3][0], det->p[3][1]),
+                            Scalar(0xff, 0, 0), 2);
+                    cout<<"["<<det->c[0]<<","<<det->c[1]<<"]"<<endl;
+                    cout << "Points: " << endl;
+                    //                for (int var1 = 0; var1 < 4; ++var1) {
+                    //                    cout << "Point: " << var1 <<endl;
+                    //                    cout << ":::::( " << det->p[var1][0] <<","<<det->p[var1][1] << " ):::::"<<endl;
+                    //                }
 
-                    matd_t *M = homography_to_pose(det->H, -fx, fy, cx, cy);
-                    double scale = tagsize / 2.0;
-                    MATD_EL(M, 0, 3) *= scale;
-                    MATD_EL(M, 1, 3) *= scale;
-                    MATD_EL(M, 2, 3) *= scale;
+                    //                computeCoG(det->p,cog);
+                    //                cout << "COG: "<< "[" <<cog[0] << "," << cog[1] << "]"<<endl;
+                    //                // The following is what will be written on the image (in the tag)
+                    stringstream ss;
+                    ss << det->id;
+                    cout << "det->H->data" <<endl;
+                    for (int j = 0; j < det->H->ncols; ++j) {
+                        cout << "["<<det->H->data[j+2*j]<<","<< det->H->data[(j+1)+2*j] << ","<< det->H->data[(j+2)+2*j]<<"]" << endl;
+                    }
+                    cout << det->H->data[0]<<endl;
+                    cout << det->H->ncols  <<endl;
+                    cout << det->H->nrows  <<endl;
+                    //                double camera_matrix [9] = {687.216761, 0.000000, 1111.575057, 0.000000, 673.787664, 747.109306, 0.000000, 0.000000, 1.000000};
+                    double camera_matrix [9] = {345.604974, 0.000000, 541.032467, 0.000000, 345.272041, 371.544205, 0.000000, 0.000000, 1.000000};
+                    double fx,fy,cx,cy;
+                    fx=camera_matrix[0];
+                    fy=camera_matrix[4];
+                    cx=camera_matrix[2];
+                    cy=camera_matrix[5];
+                    //                double temporaryVar = homography_to_pose(det->H,-fx,-fy,cx,cy)->data[1];
+                    //                cout << "TEMPORARYVAR: " << temporaryVar << endl;
+                    // This is the text which is put on the image
+                    String text = ss.str();
+                    int fontface = FONT_HERSHEY_SCRIPT_SIMPLEX;
+                    double fontscale = 1.0;
+                    int baseline;
+                    Size textsize = getTextSize(text, fontface, fontscale, 2,
+                                                &baseline);
+                    putText(frame, text, Point(det->c[0]-textsize.width/2,
+                            det->c[1]+textsize.height/2),
+                            fontface, fontscale, Scalar(0xff, 0x99, 0), 2);
 
-                    // ROS PART
-                    // Eigen::Matrix4d transform = detection.getRelativeTransform(tag_size, fx, fy, px, py);
-                    // Eigen::Matrix3d rot = transform.block(0, 0, 3, 3);
-                    //MatrixXd eigenX = Map<MatrixXd>( X, nRows, nCols );
-                    //                    Eigen::Matrix4d transform = Eigen::Map<Eigen::Matrix4d>transform(M->data,M->nrows,M->ncols);
-                    Eigen::Map<Eigen::Matrix4d>transform(M->data);
-                    //                    Map<Matrix4d> transform(M->data);
-                    //                    cout<<"transform: " << transform.data();
-                    //                    Eigen::Matrix3d rot = transform.block(0, 0, 3, 3);
-                    //                    Eigen::Quaternion<double> rot_quaternion = Eigen::Quaternion<double>(rot);
-                    geometry_msgs::PoseStamped tag_pose;
-                    tag_pose.pose.position.x = MATD_EL(M, 0, 3);
-                    tag_pose.pose.position.y = MATD_EL(M, 1, 3);
-                    tag_pose.pose.position.z = MATD_EL(M, 2, 3);
-                    //                    tag_pose.pose.orientation.x = rot_quaternion.x();
-                    //                    tag_pose.pose.orientation.y = rot_quaternion.y();
-                    //                    tag_pose.pose.orientation.z = rot_quaternion.z();
-                    //                    tag_pose.pose.orientation.w = rot_quaternion.w();
-                    //                    tag_pose.header = cv_ptr->header;
+                    //                cout<<"::::::::::::::::"<<dot.at(3) << endl;
+                    //                dot.assign( = 190;
 
-                    apriltag2_example::AprilTagDetection tag_detection;
-                    tag_detection.pose = tag_pose;
-                    //                    tag_detection.id = detection.id;
-                    tag_detection.id = det->id;
-                    tag_detection.size = tag_size;
-                    tag_detection_array.detections.push_back(tag_detection);
-                    tag_pose_array.poses.push_back(tag_pose.pose);
+                    //Set points coordinates
 
-                    tf::Stamped<tf::Transform> tag_transform;
-                    tf::poseStampedMsgToTF(tag_pose, tag_transform);
-                    //                    tf_pub_.sendTransform(tf::StampedTransform(tag_transform, tag_transform.stamp_, tag_transform.frame_id_, description.frame_name()));
-                    //                    chatter_pub.publish(message);
+                    //                double dist_point_=0.167;
+                    double tag_size = tagsize;
 
-                    cout << "Detection " << i << ": [" << MATD_EL(M, 0, 3) << ", " << MATD_EL(M, 1, 3) << ", " << MATD_EL(M, 2, 3) << "]" << endl;
+                    // It is also possible to print the current camera parameters
+                    //                std::cout << cam << std::endl;
+                    //                cout <<"-------------------"<<corners.front() << endl;
+
+                    //                for (int var3 = 0; var3 < 3; ++var3) {
+                    //                    corners[i].set_u(det->p[i][0]);
+                    //                    corners[i].set_v(det->p[i][1]);
+                    //                }
+                    //                cMo.eye();
+                    //                cout <<"-----------   --------"<<corners.front() << endl;
+                    //                computePose( point,  corners,  cam, init,  cMo);
+
+                    // Try to get the position of the tag w.r.t. the camera
+
+                    apriltag2_example::AprilTagDetectionArray tag_detection_array;
+                    geometry_msgs::PoseArray tag_pose_array;
+                    //                tag_pose_array.header = cv_ptr->header;
+                    for (int i = 0; i < zarray_size(detections); i++) {
+                        apriltag_detection_t *det;
+                        zarray_get(detections, i, &det);
+
+                        matd_t *M = homography_to_pose(det->H, -fx, fy, cx, cy);
+                        double scale = tagsize / 2.0;
+                        MATD_EL(M, 0, 3) *= scale;
+                        MATD_EL(M, 1, 3) *= scale;
+                        MATD_EL(M, 2, 3) *= scale;
+
+                        // ROS PART
+                        // Eigen::Matrix4d transform = detection.getRelativeTransform(tag_size, fx, fy, px, py);
+                        // Eigen::Matrix3d rot = transform.block(0, 0, 3, 3);
+                        //MatrixXd eigenX = Map<MatrixXd>( X, nRows, nCols );
+                        //                    Eigen::Matrix4d transform = Eigen::Map<Eigen::Matrix4d>transform(M->data,M->nrows,M->ncols);
+                        Eigen::Map<Eigen::Matrix4d>transform(M->data);
+                        //                    Map<Matrix4d> transform(M->data);
+                        //                    cout<<"transform: " << transform.data();
+                        //                    Eigen::Matrix3d rot = transform.block(0, 0, 3, 3);
+                        //                    Eigen::Quaternion<double> rot_quaternion = Eigen::Quaternion<double>(rot);
+                        geometry_msgs::PoseStamped tag_pose;
+                        tag_pose.pose.position.x = MATD_EL(M, 0, 3);
+                        tag_pose.pose.position.y = MATD_EL(M, 1, 3);
+                        tag_pose.pose.position.z = MATD_EL(M, 2, 3);
+                        //                    tag_pose.pose.orientation.x = rot_quaternion.x();
+                        //                    tag_pose.pose.orientation.y = rot_quaternion.y();
+                        //                    tag_pose.pose.orientation.z = rot_quaternion.z();
+                        //                    tag_pose.pose.orientation.w = rot_quaternion.w();
+                        //                    tag_pose.header = cv_ptr->header;
+
+                        apriltag2_example::AprilTagDetection tag_detection;
+                        tag_detection.pose = tag_pose;
+                        //                    tag_detection.id = detection.id;
+                        tag_detection.id = det->id;
+                        tag_detection.size = tag_size;
+                        tag_detection_array.detections.push_back(tag_detection);
+                        tag_pose_array.poses.push_back(tag_pose.pose);
+
+                        tf::Stamped<tf::Transform> tag_transform;
+                        tf::poseStampedMsgToTF(tag_pose, tag_transform);
+                        //                    tf_pub_.sendTransform(tf::StampedTransform(tag_transform, tag_transform.stamp_, tag_transform.frame_id_, description.frame_name()));
+                        //                    chatter_pub.publish(message);
+
+                        cout << "Detection " << i << ": [" << MATD_EL(M, 0, 3) << ", " << MATD_EL(M, 1, 3) << ", " << MATD_EL(M, 2, 3) << "]" << endl;
+                    }
+                    detections_pub_.publish(tag_detection_array);
                 }
-                detections_pub_.publish(tag_detection_array);
-
-
-                ros::spinOnce();
-                loop_rate.sleep();
+                zarray_destroy(detections);
+                cv::destroyWindow("view");
+                imshow("Tag Detections", frame);
+                if (waitKey(30) >= 0)
+                    break;
             }
-            zarray_destroy(detections);
-            cv::destroyWindow("view");
-            imshow("Tag Detections", frame);
-            if (waitKey(30) >= 0)
-                break;
-        }
+            ros::spinOnce();
+            loop_rate.sleep();
+        } // END WHILE!
 
+
+        ///////////////////////////////
         // cv::imshow("image", image);
         //        ros::spinOnce();
         //        key = cv::waitKey(30);
