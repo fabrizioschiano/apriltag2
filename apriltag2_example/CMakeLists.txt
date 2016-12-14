@@ -19,52 +19,85 @@ project(apriltag2_example)
 ## is used, also find other catkin packages
 
 find_package(catkin REQUIRED COMPONENTS
-  image_transport
-  roscpp
-  sensor_msgs
-  geometry_msgs
-  tf
-  cv_bridge
-  message_generation
-  nodelet
-  std_msgs
-  cmake_modules
-  message_filters
-)
+    image_transport
+    roscpp
+    sensor_msgs
+    geometry_msgs
+    tf
+    cv_bridge
+    message_generation
+    nodelet
+    std_msgs
+    cmake_modules
+    message_filters
+    )
 
 find_package(Eigen REQUIRED)
 find_package( OpenCV REQUIRED )
-find_package(VISP REQUIRED)
+#find_package(VISP REQUIRED)
+
+find_package(Boost REQUIRED
+    COMPONENTS filesystem system signals regex date_time program_options thread)
 
 add_message_files(
-  FILES
-  AprilTagDetection.msg
-  AprilTagDetectionArray.msg
-)
+    FILES
+    AprilTagDetection.msg
+    AprilTagDetectionArray.msg
+    )
 
 generate_messages(
-  DEPENDENCIES
-  std_msgs
-  geometry_msgs
-)
+    DEPENDENCIES
+    std_msgs
+    geometry_msgs
+    )
 
 catkin_package(
-  INCLUDE_DIRS include
-  LIBRARIES test_subscriber
-  CATKIN_DEPENDS image_transport roscpp sensor_msgs geometry_msgs tf cv_bridge message_runtime nodelet std_msgs
-  DEPENDS Eigen
-)
-include_directories(include)
-include_directories("/home/fschiano/Repositories/apriltag2")
-include_directories("/home/fschiano/Repositories/apriltag2/common")
-#include_directories(${VISP_INCLUDE_DIRS})
-include_directories(${EIGEN3_INCLUDE_DIR})
+    INCLUDE_DIRS
+    include
+
+    LIBRARIES
+    test_subscriber
+
+    CATKIN_DEPENDS
+    image_transport
+    roscpp
+    sensor_msgs
+    geometry_msgs
+    message_filters
+    tf
+    cv_bridge
+    message_runtime
+    nodelet
+    std_msgs
+
+    DEPENDS
+    Eigen
+    )
+#include_directories(include )
+#include_directories("/home/fschiano/Repositories/apriltag2")
+#include_directories("/home/fschiano/Repositories/apriltag2/common")
+##include_directories(${VISP_INCLUDE_DIRS})
+#include_directories(${EIGEN3_INCLUDE_DIR})
+
+include_directories(
+    ${Boost_INCLUDE_DIRS}
+    include
+    "/home/fschiano/Repositories/apriltag2"
+    "/home/fschiano/Repositories/apriltag2/common"
+    ${EIGEN3_INCLUDE_DIR}
+    )
+
+# Make sure Boost.Filesystem v3 is used.
+message("-->Verifying BOOST version...")
+add_definitions(-DBOOST_FILESYSTEM_VERSION=3)
+message("\n\n-->Boost_INCLUDE_DIRS:${Boost_INCLUDE_DIRS}\n\n")
+message("-->...done")
 
 # Declare a cpp library
 add_library(test_subscriber
-  include/test_subscriber.h
-  test_subscriber.cpp
-)
+    include/test_subscriber.h
+    test_subscriber.cpp
+    )
 
 
 
@@ -90,7 +123,7 @@ set(apriltagSharedLibrary ${CMAKE_CURRENT_SOURCE_DIR}/lib/libapriltag.so)
 message("-->apriltagSharedLibrary: ${apriltagSharedLibrary}")
 
 # Needed libraries
-set (EXTRA_LIBS ${apriltagSharedLibrary} flycapture ${OpenCV_LIBS} ${VISP_LIBRARIES} ${catkin_LIBRARIES})
+set (EXTRA_LIBS ${apriltagSharedLibrary} flycapture ${OpenCV_LIBS} ${VISP_LIBRARIES} ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
 target_link_libraries( opencvDemo_exe ${EXTRA_LIBS})
 
@@ -100,3 +133,20 @@ target_link_libraries( test_subscriber ${EXTRA_LIBS})
 
 add_executable(test_subscriber_node main_test_sub.cpp)
 target_link_libraries( test_subscriber_node ${EXTRA_LIBS} test_subscriber)
+
+
+#add_executable(apriltag2_test apriltag2_pub_sub.cpp)
+#target_link_libraries( apriltag2_test ${EXTRA_LIBS} test_subscriber)
+
+
+add_executable(apriltag2_exe
+    apriltag2_pub_sub.cpp
+    node.cpp
+    node.h
+    names.cpp
+    names.h
+    )
+
+target_link_libraries(apriltag2_exe
+    ${EXTRA_LIBS}
+    )
