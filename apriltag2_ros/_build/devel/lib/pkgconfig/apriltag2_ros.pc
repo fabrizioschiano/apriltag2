@@ -1,8 +1,0 @@
-prefix=/home/fschiano/Repositories/apriltag2/apriltag2_ros/_build/devel
-
-Name: apriltag2_ros
-Description: Description of apriltag2_ros
-Version: 0.0.0
-Cflags: -I/home/fschiano/Repositories/apriltag2/apriltag2_ros/_build/devel/include
-Libs: -L/home/fschiano/Repositories/apriltag2/apriltag2_ros/_build/devel/lib 
-Requires: 

@@ -1,8 +1,0 @@
-prefix=/usr/local
-
-Name: apriltag2_ros
-Description: Description of apriltag2_ros
-Version: 0.0.0
-Cflags: -I/usr/local/include
-Libs: -L/usr/local/lib 
-Requires: 
