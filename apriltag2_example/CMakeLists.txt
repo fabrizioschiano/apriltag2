@@ -89,8 +89,8 @@ include_directories(
     ${Boost_INCLUDE_DIRS}
     ${EIGEN3_INCLUDE_DIR}
     ${APRILTAG2_EXAMPLE_INCLUDE_FOLDER}
-    "../"
-    "../common"
+    "/home/fschiano/Repositories/apriltag2"
+    "/home/fschiano/Repositories/apriltag2/common"
     )
 
 # Make sure Boost.Filesystem v3 is used.
@@ -101,7 +101,7 @@ message("-->...done")
 
 # Declare a cpp library
 add_library(test_subscriber
-    ${APRILTAG2_EXAMPLE_INCLUDE_FOLDER}/test_subscriber.h
+    ${APRILTAG2_EXAMPLE_SRC_FOLDER}/test_subscriber.h
     ${APRILTAG2_EXAMPLE_SRC_FOLDER}/test_subscriber.cpp
     )
 
@@ -149,9 +149,9 @@ target_link_libraries( test_subscriber_node ${EXTRA_LIBS} test_subscriber)
 add_executable(apriltag2_exe
     ${APRILTAG2_EXAMPLE_SRC_FOLDER}/apriltag2_pub_sub.cpp
     ${APRILTAG2_EXAMPLE_SRC_FOLDER}/node.cpp
-    ${APRILTAG2_EXAMPLE_INCLUDE_FOLDER}/node.h
+    ${APRILTAG2_EXAMPLE_SRC_FOLDER}/node.h
     ${APRILTAG2_EXAMPLE_SRC_FOLDER}/names.cpp
-    ${APRILTAG2_EXAMPLE_INCLUDE_FOLDER}/names.h
+    ${APRILTAG2_EXAMPLE_SRC_FOLDER}/names.h
     )
 
 target_link_libraries(apriltag2_exe
