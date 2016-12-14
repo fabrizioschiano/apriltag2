@@ -18,6 +18,11 @@ project(apriltag2_example)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 
+set(APRILTAG2_EXAMPLE_SRC_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/src)
+message("-->APRILTAG2_EXAMPLE_SRC_FOLDER: ${APRILTAG2_EXAMPLE_SRC_FOLDER}")
+set(APRILTAG2_EXAMPLE_INCLUDE_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/include)
+message("-->APRILTAG2_EXAMPLE_INCLUDE_FOLDER: ${APRILTAG2_EXAMPLE_INCLUDE_FOLDER}")
+
 find_package(catkin REQUIRED COMPONENTS
     image_transport
     roscpp
@@ -81,22 +86,22 @@ catkin_package(
 
 include_directories(
     ${Boost_INCLUDE_DIRS}
-    include
-    "/home/fschiano/Repositories/apriltag2"
-    "/home/fschiano/Repositories/apriltag2/common"
     ${EIGEN3_INCLUDE_DIR}
+    ${APRILTAG2_EXAMPLE_INCLUDE_FOLDER}
+    "../"
+    "../common"
     )
 
 # Make sure Boost.Filesystem v3 is used.
 message("-->Verifying BOOST version...")
 add_definitions(-DBOOST_FILESYSTEM_VERSION=3)
-message("\n\n-->Boost_INCLUDE_DIRS:${Boost_INCLUDE_DIRS}\n\n")
+message("-->Boost_INCLUDE_DIRS:${Boost_INCLUDE_DIRS}")
 message("-->...done")
 
 # Declare a cpp library
 add_library(test_subscriber
-    include/test_subscriber.h
-    test_subscriber.cpp
+    ${APRILTAG2_EXAMPLE_INCLUDE_FOLDER}/test_subscriber.h
+    ${APRILTAG2_EXAMPLE_SRC_FOLDER}/test_subscriber.cpp
     )
 
 
@@ -113,7 +118,8 @@ message("-->CMAKE_BINARY_DIR= ${CMAKE_BINARY_DIR}")
 message("-->CMAKE_CURRENT_SOURCE_DIR= ${CMAKE_CURRENT_SOURCE_DIR}")
 
 set( CMAKE_BUILD_TYPE Release)
-set( CMAKE_BUILD_DIRECTORY "/home/fschiano/Repositories/apriltag2/apriltag2_example/_build")
+set( CMAKE_BUILD_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/_build")
+message("-->CMAKE_BUILD_DIRECTORY= ${CMAKE_BUILD_DIRECTORY}")
 
 find_library(FLYCAPTURE2 flycapture)
 
@@ -131,7 +137,7 @@ target_link_libraries( test_subscriber ${EXTRA_LIBS})
 #add_executable( test_sub test_subscriber.cpp )
 
 
-add_executable(test_subscriber_node main_test_sub.cpp)
+add_executable(test_subscriber_node ${APRILTAG2_EXAMPLE_SRC_FOLDER}/main_test_sub.cpp)
 target_link_libraries( test_subscriber_node ${EXTRA_LIBS} test_subscriber)
 
 
@@ -140,11 +146,11 @@ target_link_libraries( test_subscriber_node ${EXTRA_LIBS} test_subscriber)
 
 
 add_executable(apriltag2_exe
-    apriltag2_pub_sub.cpp
-    node.cpp
-    node.h
-    names.cpp
-    names.h
+    ${APRILTAG2_EXAMPLE_SRC_FOLDER}/apriltag2_pub_sub.cpp
+    ${APRILTAG2_EXAMPLE_SRC_FOLDER}/node.cpp
+    ${APRILTAG2_EXAMPLE_INCLUDE_FOLDER}/node.h
+    ${APRILTAG2_EXAMPLE_SRC_FOLDER}/names.cpp
+    ${APRILTAG2_EXAMPLE_INCLUDE_FOLDER}/names.h
     )
 
 target_link_libraries(apriltag2_exe
