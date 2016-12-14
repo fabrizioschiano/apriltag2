@@ -29,22 +29,22 @@ namespace apriltag2_detector_ros {
 
 //records last received image
 void Node::frameCallback(const sensor_msgs::ImageConstPtr& image, const sensor_msgs::CameraInfoConstPtr& cam_info){
-  boost::mutex::scoped_lock(lock_);
-  image_header_ = image->header;
-  try
-  {
-    cv_ptr = cv_bridge::toCvCopy(image, sensor_msgs::image_encodings::BGR8);
-  }
-  catch (cv_bridge::Exception& e)
-  {
-    ROS_ERROR("cv_bridge exception: %s", e.what());
-    return;
-  }
-  ROS_INFO("Putting got_image_ to TRUE");
-  // I_ = visp_bridge::toVispImageRGBa(*image); //make sure the image isn't worked on by locking a mutex
-//  cam_ = visp_bridge::toVispCameraParameters(*cam_info);
+    boost::mutex::scoped_lock(lock_);
+    image_header_ = image->header;
+    try
+    {
+        cv_ptr = cv_bridge::toCvCopy(image, sensor_msgs::image_encodings::BGR8);
+    }
+    catch (cv_bridge::Exception& e)
+    {
+        ROS_ERROR("cv_bridge exception: %s", e.what());
+        return;
+    }
+    ROS_INFO("Putting got_image_ to TRUE");
+    // I_ = visp_bridge::toVispImageRGBa(*image); //make sure the image isn't worked on by locking a mutex
+    //  cam_ = visp_bridge::toVispCameraParameters(*cam_info);
 
-  got_image_ = true;
+    got_image_ = true;
 }
 
 void Node::waitForImage(){
@@ -237,29 +237,28 @@ void Node::spin(int argc, char** argv){
 
         Mat frame, gray;
 
-        /*
         while (!key && ros::master::check()) {
             // Get the image
             Image rawImage;
-            Error error = camera.RetrieveBuffer( &rawImage );
-            if ( error != PGRERROR_OK )
-            {
-                std::cout << "capture error" << std::endl;
-                continue;
-            }
+            //            Error error = camera.RetrieveBuffer( &rawImage );
+            //            if ( error != PGRERROR_OK )
+            //            {
+            //                std::cout << "capture error" << std::endl;
+            //                continue;
+            //            }
 
             // convert to rgb
-            Image rgbImage;
-            rawImage.Convert( FlyCapture2::PIXEL_FORMAT_BGR, &rgbImage );
+            //            Image rgbImage;
+            //            rawImage.Convert( FlyCapture2::PIXEL_FORMAT_BGR, &rgbImage );
 
             // convert to OpenCV Mat
-            unsigned int rowBytes = (double)rgbImage.GetReceivedDataSize()/(double)rgbImage.GetRows();
-            cv::Mat image = cv::Mat(rgbImage.GetRows(), rgbImage.GetCols(), CV_8UC3, rgbImage.GetData(),rowBytes);
-
-            cap >> frame;
+            //            unsigned int rowBytes = (double)rgbImage.GetReceivedDataSize()/(double)rgbImage.GetRows();
+            //            cv::Mat image = cv::Mat(rgbImage.GetRows(), rgbImage.GetCols(), CV_8UC3, rgbImage.GetData(),rowBytes);
+            cv::Mat image = cv_ptr->image;
+            //            cap >> frame;
 
             frame = image;
-            cvtColor(frame, gray, COLOR_BGR2GRAY);
+            //            cvtColor(frame, gray, COLOR_BGR2GRAY);
             cout << "frame.cols:" << frame.cols << endl; // This is the width of the image
             cout << "frame.rows:" << frame.rows << endl; // This is the height of the image
             cout << "frame.data:" << frame.data << endl;
@@ -297,9 +296,10 @@ void Node::spin(int argc, char** argv){
                 //                    cout << "Point: " << var1 <<endl;
                 //                    cout << ":::::( " << det->p[var1][0] <<","<<det->p[var1][1] << " ):::::"<<endl;
                 //                }
-                computeCoG(det->p,cog);
-                cout << "COG: "<< "[" <<cog[0] << "," << cog[1] << "]"<<endl;
-                // The following is what will be written on the image (in the tag)
+
+                //                computeCoG(det->p,cog);
+                //                cout << "COG: "<< "[" <<cog[0] << "," << cog[1] << "]"<<endl;
+                //                // The following is what will be written on the image (in the tag)
                 stringstream ss;
                 ss << det->id;
                 cout << "det->H->data" <<endl;
@@ -411,10 +411,10 @@ void Node::spin(int argc, char** argv){
             if (waitKey(30) >= 0)
                 break;
         }
-    */
+
         // cv::imshow("image", image);
-//        ros::spinOnce();
-//        key = cv::waitKey(30);
+        //        ros::spinOnce();
+        //        key = cv::waitKey(30);
         ros::spinOnce();
         loop_rate.sleep();
     }
