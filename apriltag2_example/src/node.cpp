@@ -2,7 +2,7 @@
 #include "names.h"
 //#include "boost\thread\mutex.hpp"
 // Include for the apriltags
-#include "/apriltag2/apriltag.h"
+//#include "/apriltag2/apriltag.h"
 #include "tag36h11.h"
 #include "tag36h10.h"
 #include "tag36artoolkit.h"
@@ -280,10 +280,10 @@ void Node::spin(int argc, char** argv){
                 cout << "frame.rows:" << frame.rows << endl; // This is the height of the image
 //                cout << "frame.data:" << frame.data << endl;
                 // Make an image_u8_t header for the Mat data
-                image_u8_t im = { .width = frame.cols,
-                                  .height = frame.rows,
-                                  .stride = frame.cols,
-                                  .buf = frame.data
+                image_u8_t im = { .width = gray.cols,
+                                  .height = gray.rows,
+                                  .stride = gray.cols,
+                                  .buf = gray.data
                                 };
 
                 zarray_t *detections = apriltag_detector_detect(td, &im);
