@@ -312,9 +312,9 @@ matd_t *homography_to_pose(const matd_t *H, double fx, double fy, double cx, dou
     double R11 = (MATD_EL(H, 1, 1) - cy*R21) / fy;
     double TY  = (MATD_EL(H, 1, 2) - cy*TZ)  / fy;
 
-    printf("\nR10: %f\n",R10);
+    // printf("\nR10: %f\n",R10);
 
-    printf("fx: %f\n",fx);
+    // printf("fx: %f\n",fx);
     // compute the scale by requiring that the rotation columns are unit length
     // (Use geometric average of the two length vectors we have)
     double length1 = sqrtf(R00*R00 + R10*R10 + R20*R20);
@@ -326,11 +326,11 @@ matd_t *homography_to_pose(const matd_t *H, double fx, double fy, double cx, dou
     // get sign of S by requiring the tag to be in front the camera;
     // we assume camera looks in the -Z direction.
 
-    printf("\nTZ:%f\n",TZ);
+    // printf("\nTZ:%f\n",TZ);
 
     if (TZ > 0)
         s *= -1;
-    printf ("This is line %d.\n", __LINE__);
+    // printf ("This is line %d.\n", __LINE__);
     R20 *= s;
     R21 *= s;
     TZ  *= s;
@@ -340,7 +340,7 @@ matd_t *homography_to_pose(const matd_t *H, double fx, double fy, double cx, dou
     R10 *= s;
     R11 *= s;
     TY  *= s;
-    printf("R10: %f",R10);
+    // printf("R10: %f",R10);
     // now recover [R02 R12 R22] by noting that it is the cross product of the other two columns.
     double R02 = R10*R21 - R20*R11;
     double R12 = R20*R01 - R00*R21;
@@ -365,13 +365,13 @@ matd_t *homography_to_pose(const matd_t *H, double fx, double fy, double cx, dou
         matd_t *R = matd_create_data(3, 3, (double[]) { R00, R01, R02,
                                                         R10, R11, R12,
                                                         R20, R21, R22 });
-        printf ("This is line %d.\n", __LINE__);
+        // printf ("This is line %d.\n", __LINE__);
 
 //        printf()
 
         matd_svd_t svd = matd_svd(R);
         matd_destroy(R);
-        printf ("This is line %d.\n", __LINE__);
+        // printf ("This is line %d.\n", __LINE__);
         R = matd_op("M*M'", svd.U, svd.V);
 
         matd_destroy(svd.U);
