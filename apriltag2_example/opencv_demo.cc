@@ -323,7 +323,7 @@ int main(int argc, char *argv[])
                 //                    cout << "Point: " << var1 <<endl;
                 //                    cout << ":::::( " << det->p[var1][0] <<","<<det->p[var1][1] << " ):::::"<<endl;
                 //                }
-                computeCoG(det->p,cog);
+                //                computeCoG(det->p,cog);
                 cout << "COG: "<< "[" <<cog[0] << "," << cog[1] << "]"<<endl;
                 // The following is what will be written on the image (in the tag)
                 stringstream ss;
