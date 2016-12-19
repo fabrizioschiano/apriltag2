@@ -87,10 +87,11 @@ private:
     void waitForImage();
     void frameCallback(const sensor_msgs::ImageConstPtr& image, const sensor_msgs::CameraInfoConstPtr& cam_info);
     const void manageInputKey(const std::string s);
-
+    void computeCog(double p[4][2], double (&returnArray)[2]);
 public:
     Node();
     void spin(int argc, char** argv);
+
 };
 
 }
