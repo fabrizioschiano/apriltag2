@@ -299,7 +299,7 @@ void apriltag_detector_clear_families(apriltag_detector_t *td)
 
 apriltag_detector_t *apriltag_detector_create()
 {
-    printf("\nInside the apriltag_detector function\n");
+    //printf("\nInside the apriltag_detector function\n");
     apriltag_detector_t *td = (apriltag_detector_t*) calloc(1, sizeof(apriltag_detector_t));
 
     td->nthreads = 1;
@@ -1020,6 +1020,7 @@ zarray_t *apriltag_detector_detect(apriltag_detector_t *td, image_u8_t *im_orig)
     // Step 1. Detect quads according to requested image decimation
     // and blurring parameters.
     image_u8_t *quad_im = im_orig;
+    // printf("I am in step 1");
     if (td->quad_decimate > 1) {
         quad_im = image_u8_decimate(im_orig, td->quad_decimate);
 
@@ -1129,6 +1130,7 @@ zarray_t *apriltag_detector_detect(apriltag_detector_t *td, image_u8_t *im_orig)
     ////////////////////////////////////////////////////////////////
     // Step 2. Decode tags from each quad.
     if (1) {
+        // printf("-->I am in STEP 2\n");
         image_u8_t *im_gray_samples = td->debug ? image_u8_copy(im_orig) : NULL;
 
         // im_decision debugging output is slow.
@@ -1198,6 +1200,7 @@ zarray_t *apriltag_detector_detect(apriltag_detector_t *td, image_u8_t *im_orig)
     // Step 3. Reconcile detections--- don't report the same tag more
     // than once. (Allow non-overlapping duplicate detections.)
     if (1) {
+        // printf("-->I am in STEP 3\n");
         zarray_t *poly0 = g2d_polygon_create_zeros(4);
         zarray_t *poly1 = g2d_polygon_create_zeros(4);
 
@@ -1313,6 +1316,7 @@ zarray_t *apriltag_detector_detect(apriltag_detector_t *td, image_u8_t *im_orig)
     timeprofile_stamp(td->tp, "debug output");
 
     for (int i = 0; i < zarray_size(quads); i++) {
+//        printf("-->I am in the FOR LOOP \n");
         struct quad *quad;
         zarray_get_volatile(quads, i, &quad);
         matd_destroy(quad->H);
@@ -1323,7 +1327,7 @@ zarray_t *apriltag_detector_detect(apriltag_detector_t *td, image_u8_t *im_orig)
 
     zarray_sort(detections, detection_compare_function);
     timeprofile_stamp(td->tp, "cleanup");
-
+    //printf("-->detections->size: %i \n",detections->size);
     return detections;
 }
 
