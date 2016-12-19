@@ -16,4 +16,5 @@ int main(int argc, char** argv)
     cout << "argc:" << argc <<endl;
     cout << "argv:" << argv <<endl;
     apriltag2_detector_ros::Node().spin(argc,argv);
+    return 0;
 }
