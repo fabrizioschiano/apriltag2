@@ -54,7 +54,7 @@
 #include "tag16h5.h"
 
 // Costum functions (test)
-#include "userDefinedFunctions.h"
+//#include "userDefinedFunctions.h"
 
 // ROS includes
 #include "ros/ros.h"
