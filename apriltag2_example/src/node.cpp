@@ -331,7 +331,7 @@ void Node::spin(int argc, char** argv){
                 zarray_t *detections = apriltag_detector_detect(td, &im);
                 // cout << detections->data;
                 //                cout << zarray_size(detections) << " tags detected" << endl;
-
+                cout << "-----------------------" << endl;
                 // Draw detection outlines
                 for (int i = 0; i < zarray_size(detections); i++) {
                     apriltag_detection_t *det;
@@ -354,24 +354,14 @@ void Node::spin(int argc, char** argv){
                     //                    cout << "Point: " << var1 <<endl;
                     //                    cout << ":::::( " << det->p[var1][0] <<","<<det->p[var1][1] << " ):::::"<<endl;
                     //                }
-                    if (det->id == 3) {
-                        cout<<"Points_3:" << endl;
-                        for (int var2 = 0; var2 < 4; ++var2) {
-                            cout << "("<< det->p[var2][0]<<","<<det->p[var2][1] << ")"<<endl;
-                        }
-                    }
+//                    if (det->id == 3) {
+//                        cout<<"Points_3:" << endl;
+//                        for (int var2 = 0; var2 < 4; ++var2) {
+//                            cout << "("<< det->p[var2][0]<<","<<det->p[var2][1] << ")"<<endl;
+//                        }
+//                    }
                     Node::computeCog(det->p,cog);
-                    cout << "COG(ID_"<< det->id << "):"<< "[" <<cog[0] << "," << cog[1] << "]"<<endl;
-                    //                // The following is what will be written on the image (in the tag)
-                    stringstream ss;
-                    ss << det->id;
-                    //                    cout << "det->H->data" <<endl;
-                    //                    for (int j = 0; j < det->H->ncols; ++j) {
-                    //                        cout << "["<<det->H->data[j+2*j]<<","<< det->H->data[(j+1)+2*j] << ","<< det->H->data[(j+2)+2*j]<<"]" << endl;
-                    //                    }
-                    //                    cout << det->H->data[0]<<endl;
-                    //                    cout << det->H->ncols  <<endl;
-                    //                    cout << det->H->nrows  <<endl;
+//                    cout << "COG(ID_"<< det->id << "):"<< "[" <<cog[0] << "," << cog[1] << "]"<<endl;
 
                     double camera_matrix [9] = {345.604974, 0.000000, 541.032467, 0.000000, 345.272041, 371.544205, 0.000000, 0.000000, 1.000000};
                     //                    double camera_matrix [9] = {352.9714275312857, 0.0, 507.0838765900766, 0.0, 356.0344229270061, 387.8030061475569, 0.0, 0.0, 1.0};
@@ -380,11 +370,80 @@ void Node::spin(int argc, char** argv){
                     fy=camera_matrix[4];
                     cx=camera_matrix[2];
                     cy=camera_matrix[5];
+
+                    //// Camera 15357017 parameters
+                    const int npoints = 2; // number of point specified
+                    // Points initialization
+                    // Only 2 ponts in this example, in real code they are read from file.
+                    Mat_<Point2f> points(1,1);
+                    points(0) = Point2f(cog[0],cog[1]);
+                    Mat_<float> camera_matrix_Mat_(3,3);
+                    camera_matrix_Mat_ << 342.420917, 0.000000, 551.137508, 0.000000, 338.672241, 372.152655, 0.000000, 0.000000, 1.000000;
+                    Mat_<float> distCoeffs(5,1);
+                    distCoeffs << 0.011428, -0.000079, -0.002445, 0.013517, 0.000000;
+                    Mat_<float> rectificationMatrix(3,3);
+                    rectificationMatrix << 1.000000, 0.000000, 0.000000, 0.000000, 1.000000, 0.000000, 0.000000, 0.000000, 1.000000;
+                    //                    points(1) = Point2f(2560, 1920);
+                    Mat dst;// leave empty, opencv will fill it.
+                    // Undistorsion of the pixels we are interested in
+                    cv::undistortPoints(points, dst, camera_matrix_Mat_, distCoeffs, rectificationMatrix);
+                    cout << "-->dst(ID_"<< det->id << "):" <<  dst <<endl;
+                    Mat1f vectorRectified = (Mat1f(3,1) << dst.at<float>(0), dst.at<float>(1), 1.f);
+                    //                    Mat_<float> vector1 = (camera_matrix_Mat_.inv() * vectorRectified);
+                    cv::normalize(vectorRectified,vectorRectified);
+                    for (int var = 0; var < 3; ++var) {
+                        cout << "vectorRectified.at<float>("<<var<<"): " << vectorRectified.at<float>(var) << endl;
+                    }
+                    //                    cout << "vectorRectified.at<float>(0): " << vectorRectified.at<float>(0) << endl;
+                    //                    cout << "vectorRectified.at<float>(1): " << vectorRectified.at<float>(1) << endl;
+                    //                    cout << "vectorRectified.at<float>(2): " << vectorRectified.at<float>(2) << endl;
+                    cout <<  "Norm of the vector: " << norm(vectorRectified) << endl;
+
+                    // Rotation from b_ij in camera frame to b_ij in body
+                    Mat_<float> R_y_90(3,3);
+                    R_y_90 << 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, 0.0;
+                    Mat_<float> R_x_90(3,3);
+                    R_x_90 << 1.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0, 1.0, 0.0;
+                    Mat_<float> R_z_90(3,3);
+                    R_z_90 << 0.0, -1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0;
+
+                    Mat_<float> R_y_m90(3,3);
+                    R_y_m90 << 0.0, 0.0, -1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0;
+                    Mat_<float> R_x_m90(3,3);
+                    R_x_m90 << 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, -1.0, 0.0;
+                    Mat_<float> R_z_m90(3,3);
+                    R_z_m90 << 0.0, 1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0;
+
+
+                    Mat1f vectorRectified_body;
+//                    vectorRectified_body = R_x_90*R_z_90*vectorRectified;
+                    vectorRectified_body = R_y_90*R_z_m90*vectorRectified;
+                    for (int var1 = 0; var1 < 3; ++var1) {
+                        cout << "vectorRectified_body.at<float>("<<var1<<"): " << vectorRectified_body.at<float>(var1) << endl;
+                    }
+                    int fontface = FONT_HERSHEY_SCRIPT_SIMPLEX;
+
+//                    ss << (std::string)vectorRectified_body.at<float>(var1);
+
+                    double pi = 3.14159265359;
+                    stringstream stream;
+                    stringstream stream_norm;
+                    stream << setprecision(4) << "bearing_ij =[ " << vectorRectified_body.at<float>(0) << "," << vectorRectified_body.at<float>(1) << "," << vectorRectified_body.at<float>(2) << " ]";
+                    stream_norm << setprecision(4) << "Norm Bearing: " <<  norm(vectorRectified);
+
+                    string s = stream.str();
+                    string s1 = stream_norm.str();
+                    cv::putText(frame,s,Point2f(30,700), FONT_HERSHEY_PLAIN, 2,  Scalar(255,255,255));
+                    cv::putText(frame,s1,Point2f(30,740), FONT_HERSHEY_PLAIN, 2,  Scalar(255,255,255));
+                    // The following is what will be written on the image (in the tag)
+                    stringstream ss;
+                    ss << det->id;
+
                     //                double temporaryVar = homography_to_pose(det->H,-fx,-fy,cx,cy)->data[1];
                     //                cout << "TEMPORARYVAR: " << temporaryVar << endl;
                     // This is the text which is put on the image
                     String text = ss.str();
-                    int fontface = FONT_HERSHEY_SCRIPT_SIMPLEX;
+
                     double fontscale = 1.0;
                     int baseline;
                     Size textsize = getTextSize(text, fontface, fontscale, 2,
