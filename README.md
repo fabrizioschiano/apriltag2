@@ -10,8 +10,9 @@ All this is driven by the need of detection of multiple quadrotor UAVs through o
 
 In the following video you could see how my system is working for now. I am using a flea3 by Pointgrey, converting its image in OpenCV and streaming it (with the camera_info topic) over ROS. Then there is a node which is subscribing to the image+camera_info and applying the apriltag2 algorithm to the image. This node is then publishing the pose of the tag in the camera frame.
 
-https://youtu.be/cpYgeW6D_vk
-https://youtu.be/javKrPixwNg
+1 - https://youtu.be/cpYgeW6D_vk
+
+2 - https://youtu.be/javKrPixwNg
 
 This repository is coming from the folder apriltag-2016-10-21. I downloaded it here:
 https://april.eecs.umich.edu/software/apriltag.html
