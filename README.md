@@ -5,6 +5,13 @@ My goal is to use it for a group of quadrotor UAVs equipped with onboard cameras
 
 More about me can be found here: http://www.irisa.fr/lagadic/team/Fabrizio.Schiano.html
 
+My goal is to extract a bearing vector from a monocular camera. A bearing vector beta_ij is a unit-norm vector which goes from the robot i to the robot j and it is expressed in the body frame of robot i. In order to do this I would like to use the apriltag2 algorithm. 
+All this is driven by the need of detection of multiple quadrotor UAVs through onboard cameras (a flea3 by PointGrey: https://www.ptgrey.com/flea3-32-mp-color-usb3-vision-sony-imx036-camera) in order to retrieve a bearing IJ measurement (i.e. a unit-vector that goes from the origin of the body frame of the robot I to the origin of the body frame of the robot J). 
+
+In the following video you could see how my system is working for now. I am using a flea3 by Pointgrey, converting its image in OpenCV and streaming it (with the camera_info topic) over ROS. Then there is a node which is subscribing to the image+camera_info and applying the apriltag2 algorithm to the image. This node is then publishing the pose of the tag in the camera frame.
+
+https://youtu.be/cpYgeW6D_vk
+https://youtu.be/javKrPixwNg
 
 This repository is coming from the folder apriltag-2016-10-21. I downloaded it here:
 https://april.eecs.umich.edu/software/apriltag.html
