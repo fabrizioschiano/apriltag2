@@ -19,7 +19,6 @@ using namespace std;
 using namespace cv;
 using namespace FlyCapture2;
 
-
 void imageCallback(const sensor_msgs::ImageConstPtr& msg)
 {
     try
@@ -39,6 +38,15 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg)
 
 
 namespace apriltag2_detector_ros {
+
+void Node::rotationMatrixZ(double alpha, cv::Mat_<float> (&R_z_90)){
+    double pi = 3.14159265359;
+    double alpha_rad = alpha*pi/180;
+    //    cv::Mat_<float> RotZ(3,3);
+    R_z_90 << cos(alpha_rad), -sin(alpha_rad), 0.0, sin(alpha_rad), cos(alpha_rad), 0.0, 0.0, 0.0, 1.0;
+
+    //    R_z_90 = RotZ;
+}
 
 void Node::computeCog(double p[4][2], double (&returnArray)[2]){
 
@@ -69,7 +77,7 @@ void Node::frameCallback(const sensor_msgs::ImageConstPtr& image, const sensor_m
         ROS_ERROR("cv_bridge exception: %s", e.what());
         return;
     }
-    //    ROS_INFO("Putting got_image_ to TRUE");
+    //        ROS_INFO("Putting got_image_ to TRUE");
     // I_ = visp_bridge::toVispImageRGBa(*image); //make sure the image isn't worked on by locking a mutex
     //  cam_ = visp_bridge::toVispCameraParameters(*cam_info);
 
@@ -98,6 +106,7 @@ Node::Node():
 }
 
 void Node::spin(int argc, char** argv){
+    double pi = 3.14159265359;
     int camera_used = 2;
     //    string camera_info_topic_ = camera_info_topic;
     //    string image_topic_ = image_topic;
@@ -122,12 +131,14 @@ void Node::spin(int argc, char** argv){
     message_filters::Subscriber<sensor_msgs::Image> raw_image_subscriber(nh_, image_topic, queue_size_);
     message_filters::Subscriber<sensor_msgs::CameraInfo> camera_info_subscriber(nh_, camera_info_topic, queue_size_);
 
-    cout<< "camera_image_topic: " <<  image_topic_2 << endl;
-    cout<< "camera_info_topic: "  <<  camera_info_topic_2  << endl;
+    cout<< "camera_image_topic: " <<  image_topic << endl;
+    cout<< "camera_info_topic: "  <<  camera_info_topic  << endl;
     message_filters::TimeSynchronizer<sensor_msgs::Image, sensor_msgs::CameraInfo> image_info_sync(raw_image_subscriber, camera_info_subscriber, queue_size_);
     image_info_sync.registerCallback(boost::bind(&Node::frameCallback,this, _1, _2));
     //    ros::Publisher chatter_pub = nh.advertise<std_msgs::String>("apriltag2_pose",1000);
     ros::Publisher detections_pub_ = nh_.advertise<apriltag2_example::AprilTagDetectionArray>("apriltag2_tag_detections", 1000);
+    ros::Publisher detections_pub_1 = nh_.advertise<apriltag2_example::AprilTagDetection>("apriltag2_tag_detection1", 1000);
+    ros::Publisher poseStamped_pub_1 = nh_.advertise<geometry_msgs::PoseStamped>("apriltag2_ID1_poseStamped", 1000);
     ros::Rate loop_rate(100);
 
     //    cv::namedWindow("view");
@@ -331,11 +342,15 @@ void Node::spin(int argc, char** argv){
                 zarray_t *detections = apriltag_detector_detect(td, &im);
                 // cout << detections->data;
                 //                cout << zarray_size(detections) << " tags detected" << endl;
-                cout << "-----------------------" << endl;
+                //                cout << "-----------------------" << endl;
                 // Draw detection outlines
+                int counter = 0;
                 for (int i = 0; i < zarray_size(detections); i++) {
                     apriltag_detection_t *det;
                     zarray_get(detections, i, &det);
+                    if (det->id == 3) {
+                        counter++;
+                    }
                     line(frame, Point(det->p[0][0], det->p[0][1]),
                             Point(det->p[1][0], det->p[1][1]),
                             Scalar(0, 0xff, 0), 2);
@@ -354,16 +369,16 @@ void Node::spin(int argc, char** argv){
                     //                    cout << "Point: " << var1 <<endl;
                     //                    cout << ":::::( " << det->p[var1][0] <<","<<det->p[var1][1] << " ):::::"<<endl;
                     //                }
-//                    if (det->id == 3) {
-//                        cout<<"Points_3:" << endl;
-//                        for (int var2 = 0; var2 < 4; ++var2) {
-//                            cout << "("<< det->p[var2][0]<<","<<det->p[var2][1] << ")"<<endl;
-//                        }
-//                    }
+                    //                    if (det->id == 3) {
+                    //                        cout<<"Points_3:" << endl;
+                    //                        for (int var2 = 0; var2 < 4; ++var2) {
+                    //                            cout << "("<< det->p[var2][0]<<","<<det->p[var2][1] << ")"<<endl;
+                    //                        }
+                    //                    }
                     Node::computeCog(det->p,cog);
-//                    cout << "COG(ID_"<< det->id << "):"<< "[" <<cog[0] << "," << cog[1] << "]"<<endl;
+                    //                    cout << "COG(ID_"<< det->id << "):"<< "[" <<cog[0] << "," << cog[1] << "]"<<endl;
 
-                    double camera_matrix [9] = {345.604974, 0.000000, 541.032467, 0.000000, 345.272041, 371.544205, 0.000000, 0.000000, 1.000000};
+                    double camera_matrix [9] = {342.420917, 0.000000, 551.137508, 0.000000, 338.672241, 372.152655, 0.000000, 0.000000, 1.000000};
                     //                    double camera_matrix [9] = {352.9714275312857, 0.0, 507.0838765900766, 0.0, 356.0344229270061, 387.8030061475569, 0.0, 0.0, 1.0};
                     double fx,fy,cx,cy;
                     fx=camera_matrix[0];
@@ -387,17 +402,17 @@ void Node::spin(int argc, char** argv){
                     Mat dst;// leave empty, opencv will fill it.
                     // Undistorsion of the pixels we are interested in
                     cv::undistortPoints(points, dst, camera_matrix_Mat_, distCoeffs, rectificationMatrix);
-                    cout << "-->dst(ID_"<< det->id << "):" <<  dst <<endl;
+                    //                    cout << "-->dst(ID_"<< det->id << "):" <<  dst <<endl;
                     Mat1f vectorRectified = (Mat1f(3,1) << dst.at<float>(0), dst.at<float>(1), 1.f);
                     //                    Mat_<float> vector1 = (camera_matrix_Mat_.inv() * vectorRectified);
                     cv::normalize(vectorRectified,vectorRectified);
-                    for (int var = 0; var < 3; ++var) {
-                        cout << "vectorRectified.at<float>("<<var<<"): " << vectorRectified.at<float>(var) << endl;
-                    }
+                    //                    for (int var = 0; var < 3; ++var) {
+                    //                        cout << "vectorRectified.at<float>("<<var<<"): " << vectorRectified.at<float>(var) << endl;
+                    //                    }
                     //                    cout << "vectorRectified.at<float>(0): " << vectorRectified.at<float>(0) << endl;
                     //                    cout << "vectorRectified.at<float>(1): " << vectorRectified.at<float>(1) << endl;
                     //                    cout << "vectorRectified.at<float>(2): " << vectorRectified.at<float>(2) << endl;
-                    cout <<  "Norm of the vector: " << norm(vectorRectified) << endl;
+                    //                    cout <<  "Norm of the vector: " << norm(vectorRectified) << endl;
 
                     // Rotation from b_ij in camera frame to b_ij in body
                     Mat_<float> R_y_90(3,3);
@@ -414,18 +429,23 @@ void Node::spin(int argc, char** argv){
                     Mat_<float> R_z_m90(3,3);
                     R_z_m90 << 0.0, 1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0;
 
-
+                    //                    cout << "cos(60) "<< cos(60*pi/180) << endl;
+                    //                    cout << "cos(60) "<< cos(60) << endl;
                     Mat1f vectorRectified_body;
-//                    vectorRectified_body = R_x_90*R_z_90*vectorRectified;
-                    vectorRectified_body = R_y_90*R_z_m90*vectorRectified;
-                    for (int var1 = 0; var1 < 3; ++var1) {
-                        cout << "vectorRectified_body.at<float>("<<var1<<"): " << vectorRectified_body.at<float>(var1) << endl;
-                    }
+                    //                    vectorRectified_body = R_x_90*R_z_90*vectorRectified;
+                    Mat_<float> Rz(3,3);
+                    rotationMatrixZ(-90, Rz);
+                    vectorRectified_body = R_y_90*Rz*vectorRectified;
+                    rotationMatrixZ(90, Rz);
+                    vectorRectified_body = Rz*vectorRectified_body;
+//                    for (int var1 = 0; var1 < 3; ++var1) {
+//                        cout << "vectorRectified_body.at<float>("<<var1<<"): " << vectorRectified_body.at<float>(var1) << endl;
+//                    }
                     int fontface = FONT_HERSHEY_SCRIPT_SIMPLEX;
 
-//                    ss << (std::string)vectorRectified_body.at<float>(var1);
+                    //                    ss << (std::string)vectorRectified_body.at<float>(var1);
 
-                    double pi = 3.14159265359;
+
                     stringstream stream;
                     stringstream stream_norm;
                     stream << setprecision(4) << "bearing_ij =[ " << vectorRectified_body.at<float>(0) << "," << vectorRectified_body.at<float>(1) << "," << vectorRectified_body.at<float>(2) << " ]";
@@ -433,14 +453,11 @@ void Node::spin(int argc, char** argv){
 
                     string s = stream.str();
                     string s1 = stream_norm.str();
-                    cv::putText(frame,s,Point2f(30,700), FONT_HERSHEY_PLAIN, 2,  Scalar(255,255,255));
-                    cv::putText(frame,s1,Point2f(30,740), FONT_HERSHEY_PLAIN, 2,  Scalar(255,255,255));
+                    putText(frame,s,Point2f(30,700), FONT_HERSHEY_PLAIN, 2,  Scalar(255,255,255));
+                    putText(frame,s1,Point2f(30,740), FONT_HERSHEY_PLAIN, 2,  Scalar(255,255,255));
                     // The following is what will be written on the image (in the tag)
                     stringstream ss;
                     ss << det->id;
-
-                    //                double temporaryVar = homography_to_pose(det->H,-fx,-fy,cx,cy)->data[1];
-                    //                cout << "TEMPORARYVAR: " << temporaryVar << endl;
                     // This is the text which is put on the image
                     String text = ss.str();
 
@@ -452,84 +469,78 @@ void Node::spin(int argc, char** argv){
                             det->c[1]+textsize.height/2),
                             fontface, fontscale, Scalar(0xff, 0x99, 0), 2);
                     cv::circle(frame, cv::Point(cog[0], cog[1]), 20, CV_RGB(255,0,0));
-
-
                     cv::circle(frame, cv::Point(0, 0), 20, CV_RGB(0,255,0));
                     cv::circle(frame, cv::Point(1040, 776), 20, CV_RGB(0,0,255));
-                    //                cout<<"::::::::::::::::"<<dot.at(3) << endl;
-                    //                dot.assign( = 190;
-
-                    //Set points coordinates
 
                     //                double dist_point_=0.167;
                     double tag_size = tagsize;
 
-                    // It is also possible to print the current camera parameters
-                    //                std::cout << cam << std::endl;
-                    //                cout <<"-------------------"<<corners.front() << endl;
-
-                    //                for (int var3 = 0; var3 < 3; ++var3) {
-                    //                    corners[i].set_u(det->p[i][0]);
-                    //                    corners[i].set_v(det->p[i][1]);
-                    //                }
-                    //                cMo.eye();
-                    //                cout <<"-----------   --------"<<corners.front() << endl;
-                    //                computePose( point,  corners,  cam, init,  cMo);
-
                     // Try to get the position of the tag w.r.t. the camera
 
                     apriltag2_example::AprilTagDetectionArray tag_detection_array;
+                    apriltag2_example::AprilTagDetection tag_detection1;
+                    geometry_msgs::PoseStamped poseTag1;
                     geometry_msgs::PoseArray tag_pose_array;
                     //                tag_pose_array.header = cv_ptr->header;
-                    for (int i = 0; i < zarray_size(detections); i++) {
-                        apriltag_detection_t *det;
-                        zarray_get(detections, i, &det);
-//                        if(det->id == 2 || det->id ==3 || det->id ==4){
-                          if(det->id == 2){
-                            matd_t *M = homography_to_pose(det->H, -fx, fy, cx, cy);
-                            double scale = tagsize / 2.0;
-                            MATD_EL(M, 0, 3) *= scale;
-                            MATD_EL(M, 1, 3) *= scale;
-                            MATD_EL(M, 2, 3) *= scale;
+                    //                        if(det->id == 2 || det->id ==3 || det->id ==4){
+                    matd_t *M = homography_to_pose(det->H, -fx, fy, cx, cy);
+                    double scale = tagsize / 2.0;
+                    MATD_EL(M, 0, 3) *= scale;
+                    MATD_EL(M, 1, 3) *= scale;
+                    MATD_EL(M, 2, 3) *= scale;
 
-                            // ROS PART
-                            // Eigen::Matrix4d transform = detection.getRelativeTransform(tag_size, fx, fy, px, py);
-                            // Eigen::Matrix3d rot = transform.block(0, 0, 3, 3);
-                            //MatrixXd eigenX = Map<MatrixXd>( X, nRows, nCols );
-                            //                    Eigen::Matrix4d transform = Eigen::Map<Eigen::Matrix4d>transform(M->data,M->nrows,M->ncols);
-                            Eigen::Map<Eigen::Matrix4d>transform(M->data);
-                            //                    Map<Matrix4d> transform(M->data);
-                            //                    cout<<"transform: " << transform.data();
-                            //                    Eigen::Matrix3d rot = transform.block(0, 0, 3, 3);
-                            //                    Eigen::Quaternion<double> rot_quaternion = Eigen::Quaternion<double>(rot);
-                            geometry_msgs::PoseStamped tag_pose;
-                            tag_pose.pose.position.x = MATD_EL(M, 0, 3);
-                            tag_pose.pose.position.y = MATD_EL(M, 1, 3);
-                            tag_pose.pose.position.z = MATD_EL(M, 2, 3);
-                            //                    tag_pose.pose.orientation.x = rot_quaternion.x();
-                            //                    tag_pose.pose.orientation.y = rot_quaternion.y();
-                            //                    tag_pose.pose.orientation.z = rot_quaternion.z();
-                            //                    tag_pose.pose.orientation.w = rot_quaternion.w();
-                            //                    tag_pose.header = cv_ptr->header;
+                    // ROS PART
+                    // Eigen::Matrix4d transform = detection.getRelativeTransform(tag_size, fx, fy, px, py);
+                    // Eigen::Matrix3d rot = transform.block(0, 0, 3, 3);
+                    //MatrixXd eigenX = Map<MatrixXd>( X, nRows, nCols );
+                    //                    Eigen::Matrix4d transform = Eigen::Map<Eigen::Matrix4d>transform(M->data,M->nrows,M->ncols);
+                    Eigen::Map<Eigen::Matrix4d>transform(M->data);
+                    //                    Map<Matrix4d> transform(M->data);
+                    //                    cout<<"transform: " << transform.data();
+                    //                    Eigen::Matrix3d rot = transform.block(0, 0, 3, 3);
+                    //                    Eigen::Quaternion<double> rot_quaternion = Eigen::Quaternion<double>(rot);
+                    geometry_msgs::PoseStamped tag_pose;
+                    tag_pose.pose.position.x = MATD_EL(M, 0, 3);
+                    tag_pose.pose.position.y = MATD_EL(M, 1, 3);
+                    tag_pose.pose.position.z = MATD_EL(M, 2, 3);
+                    //                    tag_pose.pose.orientation.x = rot_quaternion.x();
+                    //                    tag_pose.pose.orientation.y = rot_quaternion.y();
+                    //                    tag_pose.pose.orientation.z = rot_quaternion.z();
+                    //                    tag_pose.pose.orientation.w = rot_quaternion.w();
+                    tag_pose.header = cv_ptr->header;
 
-                            apriltag2_example::AprilTagDetection tag_detection;
-                            tag_detection.pose = tag_pose;
-                            //                    tag_detection.id = detection.id;
-                            tag_detection.id = det->id;
-                            tag_detection.size = tag_size;
-                            tag_detection_array.detections.push_back(tag_detection);
-                            tag_pose_array.poses.push_back(tag_pose.pose);
+                    apriltag2_example::AprilTagDetection tag_detection;
 
-                            tf::Stamped<tf::Transform> tag_transform;
-                            tf::poseStampedMsgToTF(tag_pose, tag_transform);
-                            //                    tf_pub_.sendTransform(tf::StampedTransform(tag_transform, tag_transform.stamp_, tag_transform.frame_id_, description.frame_name()));
-                            //                    chatter_pub.publish(message);
+                    tag_detection.pose = tag_pose;
+                    //                    tag_detection.id = detection.id;
+                    tag_detection.id = det->id;
+                    tag_detection.size = tag_size;
+                    tag_detection_array.detections.push_back(tag_detection);
+                    tag_pose_array.poses.push_back(tag_pose.pose);
 
-                            //                        cout << "Detection " << i << ": [" << MATD_EL(M, 0, 3) << ", " << MATD_EL(M, 1, 3) << ", " << MATD_EL(M, 2, 3) << "]" << endl;
-                        }
+                    //                            tf::Stamped<tf::Transform> tag_transform;
+                    //                            tf::poseStampedMsgToTF(tag_pose, tag_transform);
+
+                    if (det->id == 1) {
+                        tag_detection1.pose = tag_pose;
+                        //                    tag_detection.id = detection.id;
+                        tag_detection1.id = det->id;
+                        tag_detection1.size = tag_size;
+
+                        //                                poseTag1.pose = tag_pose;
+                        //                                poseTag1.header = 131088;
+
 
                     }
+
+                    //                    tf_pub_.sendTransform(tf::StampedTransform(tag_transform, tag_transform.stamp_, tag_transform.frame_id_, description.frame_name()));
+                    //                    chatter_pub.publish(message);
+
+                    //                        cout << "Detection " << i << ": [" << MATD_EL(M, 0, 3) << ", " << MATD_EL(M, 1, 3) << ", " << MATD_EL(M, 2, 3) << "]" << endl;
+
                     detections_pub_.publish(tag_detection_array);
+                    detections_pub_1.publish(tag_detection1);
+                    poseStamped_pub_1.publish(poseTag1);
                 }
                 zarray_destroy(detections);
                 cv::destroyWindow("view");
