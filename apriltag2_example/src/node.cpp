@@ -344,12 +344,15 @@ void Node::spin(int argc, char** argv){
                 //                cout << zarray_size(detections) << " tags detected" << endl;
                 //                cout << "-----------------------" << endl;
                 // Draw detection outlines
-                int counter = 0;
+                int counter_3 = 0;
+                int counter_4 = 0;
                 for (int i = 0; i < zarray_size(detections); i++) {
                     apriltag_detection_t *det;
                     zarray_get(detections, i, &det);
                     if (det->id == 3) {
-                        counter++;
+                        counter_3++;
+                    }else if(det->id == 4){
+                        counter_4++;
                     }
                     line(frame, Point(det->p[0][0], det->p[0][1]),
                             Point(det->p[1][0], det->p[1][1]),
@@ -448,13 +451,21 @@ void Node::spin(int argc, char** argv){
 
                     stringstream stream;
                     stringstream stream_norm;
-                    stream << setprecision(4) << "bearing_ij =[ " << vectorRectified_body.at<float>(0) << "," << vectorRectified_body.at<float>(1) << "," << vectorRectified_body.at<float>(2) << " ]";
-                    stream_norm << setprecision(4) << "Norm Bearing: " <<  norm(vectorRectified);
+                    if (det->id == 3) {
+                        stream << setprecision(4) << "bearing_i"<<det->id << "_" << counter_3 <<  "=[ " << vectorRectified_body.at<float>(0) << "," << vectorRectified_body.at<float>(1) << "," << vectorRectified_body.at<float>(2) << " ]";
+                    } else if(det->id == 4){
+                        stream << setprecision(4) << "bearing_i"<<det->id << "_" << counter_4 <<  "=[ " << vectorRectified_body.at<float>(0) << "," << vectorRectified_body.at<float>(1) << "," << vectorRectified_body.at<float>(2) << " ]";
+                    }
+                    //                    stream_norm << setprecision(4) << "Norm Bearing: " <<  norm(vectorRectified);
 
                     string s = stream.str();
                     string s1 = stream_norm.str();
-                    putText(frame,s,Point2f(30,700), FONT_HERSHEY_PLAIN, 2,  Scalar(255,255,255));
-                    putText(frame,s1,Point2f(30,740), FONT_HERSHEY_PLAIN, 2,  Scalar(255,255,255));
+                    if (det->id == 3) {
+                        putText(frame,s,Point2f(25,700+30*(counter_3-1)), FONT_HERSHEY_PLAIN, 2,  Scalar(255,255,255));
+                    } else if(det->id == 4){
+                        putText(frame,s,Point2f(25,100+30*(counter_4-1)), FONT_HERSHEY_PLAIN, 2,  Scalar(255,255,255));
+                    }
+                    //    putText(frame,s1,Point2f(25,740), FONT_HERSHEY_PLAIN, 2,  Scalar(255,255,255));
                     // The following is what will be written on the image (in the tag)
                     stringstream ss;
                     ss << det->id;
