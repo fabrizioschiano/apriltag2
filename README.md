@@ -3,6 +3,12 @@
 **I am not the author of this algorithm. I am just trying to use it. 
 My goal is to use it for a group of quadrotor UAVs equipped with onboard cameras (flea FL3-U3-32S2C).**
 
+Specifically we would like to carry out these experiments with bearing information coming directly from the apriltag2 algorithm running on the ODROIDs embedded on the quadrotors
+
+[![ICRA 2017](https://img.youtube.com/vi/uNkMEGOBR0c/0.jpg)](https://www.youtube.com/watch?v=uNkMEGOBR0c "Bearing Rigidity Maintenance for Formations of Quadrotor UAVs - ICRA 2017")
+
+[![IROS 2016](https://img.youtube.com/vi/OqPs3fv0zQg/0.jpg)](https://www.youtube.com/watch?v=OqPs3fv0zQg "A Rigidity-Based Decentralized Bearing Formation Controller for Groups of Quadrotors UAVs - IROS 2016")
+
 More about me can be found here: http://www.irisa.fr/lagadic/team/Fabrizio.Schiano.html
 
 My goal is to extract a bearing vector from a monocular camera. A bearing vector beta_ij is a unit-norm vector which goes from the robot i to the robot j and it is expressed in the body frame of robot i. In order to do this I would like to use the apriltag2 algorithm. 
