@@ -133,6 +133,30 @@ The tag detector doesn't consider the scale of the tag. Here is some sample code
 Basically the detector assumes each tag is centered at the origin of its own coordinate system, with the tag corners at (-1, -1), (1, -1), (1, 1), and (-1, 1). Therefore, it assumes the tag's width is 2 units. To get the tag pose in real units, scale the position by (tag size in meters)/2, or whatever unit you prefer.
 
 
+I think you should use an
+
+ROSRUN OF THE APRILTAG2 EXAMPLE
+====================
+This section is really under development. 
+
+You should:
+ - include apriltag2_example package in the src of your catkin_ws and `catkin_make` and everything was compiled
+   I usually do that simply creating a symbolic link in the `src` folder of my catkin_ws. In this way 
+   `ln -s /pathToYourFolder/apriltag2_example`
+   
+   Of course you need to put YOUR path in the `pathToYourFolder`
+   
+ - Compile the apriltag2 libraries and `sudo make install` them as explained above. If everything works, you should be able to run the following command
+
+`rosrun apriltag2_example apriltag2_exe -f tag16h5` 
+
+and have as an output 
+
+![Alt text](/pictures/aprilTag2_example.png?raw=true "apriltag2_exe ROS output")
+
+this is the output if there is no camera publishing on the topic speicified [HERE](https://github.com/fabrizioschiano/apriltag2/blob/master/apriltag2_example/src/node.cpp#L133
+)
+
 IROS 2016 PAPER
 ==================
 For more details about the algorithm look here:
