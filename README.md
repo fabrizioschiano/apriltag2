@@ -163,6 +163,17 @@ and have as an output
 this is the output if there is no camera publishing on the topic speicified [HERE](https://github.com/fabrizioschiano/apriltag2/blob/master/apriltag2_example/src/node.cpp#L133
 )
 
+PRELIMINARY RESULTS
+====================
+
+1. Flying with a quadrotor which is recording images and saving them on a SD Card. The apriltag is applied OFFLINE. We are currently working on an ONLINE solution
+
+[![november 2016](https://img.youtube.com/vi/cpYgeW6D_vk/0.jpg)](https://www.youtube.com/watch?v=cpYgeW6D_vk "test1")
+
+2. Figured out how to get a bearing information from the apriltag algorithm
+
+[![december 2016](https://img.youtube.com/vi/javKrPixwNg/0.jpg)](https://www.youtube.com/watch?v=javKrPixwNg "test1")
+
 IROS 2016 PAPER
 ==================
 For more details about the algorithm look here:
