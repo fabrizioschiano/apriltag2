@@ -3,6 +3,12 @@
 **I am not the author of this algorithm. I am just trying to use it. 
 My goal is to use it for a group of quadrotor UAVs equipped with onboard cameras (flea FL3-U3-32S2C).**
 
+Specifically we would like to carry out these experiments with bearing information coming directly from the apriltag2 algorithm running on the ODROIDs embedded on the quadrotors
+
+[![ICRA 2017](https://img.youtube.com/vi/uNkMEGOBR0c/0.jpg)](https://www.youtube.com/watch?v=uNkMEGOBR0c "Bearing Rigidity Maintenance for Formations of Quadrotor UAVs - ICRA 2017")
+
+[![IROS 2016](https://img.youtube.com/vi/OqPs3fv0zQg/0.jpg)](https://www.youtube.com/watch?v=OqPs3fv0zQg "A Rigidity-Based Decentralized Bearing Formation Controller for Groups of Quadrotors UAVs - IROS 2016")
+
 More about me can be found here: http://www.irisa.fr/lagadic/team/Fabrizio.Schiano.html
 
 My goal is to extract a bearing vector from a monocular camera. A bearing vector beta_ij is a unit-norm vector which goes from the robot i to the robot j and it is expressed in the body frame of robot i. In order to do this I would like to use the apriltag2 algorithm. 
@@ -132,6 +138,41 @@ The tag detector doesn't consider the scale of the tag. Here is some sample code
 
 Basically the detector assumes each tag is centered at the origin of its own coordinate system, with the tag corners at (-1, -1), (1, -1), (1, 1), and (-1, 1). Therefore, it assumes the tag's width is 2 units. To get the tag pose in real units, scale the position by (tag size in meters)/2, or whatever unit you prefer.
 
+
+I think you should use an
+
+ROSRUN OF THE APRILTAG2 EXAMPLE
+====================
+This section is really under development. 
+
+You should:
+ - include apriltag2_example package in the src of your catkin_ws and `catkin_make` and everything was compiled
+   I usually do that simply creating a symbolic link in the `src` folder of my catkin_ws. In this way 
+   `ln -s /pathToYourFolder/apriltag2_example`
+   
+   Of course you need to put YOUR path in the `pathToYourFolder`
+   
+ - Compile the apriltag2 libraries and `sudo make install` them as explained above. If everything works, you should be able to run the following command
+
+`rosrun apriltag2_example apriltag2_exe -f tag16h5` 
+
+and have as an output 
+
+![Alt text](/pictures/aprilTag2_example.png?raw=true "apriltag2_exe ROS output")
+
+this is the output if there is no camera publishing on the topic speicified [HERE](https://github.com/fabrizioschiano/apriltag2/blob/master/apriltag2_example/src/node.cpp#L133
+)
+
+PRELIMINARY RESULTS
+====================
+
+1. Flying with a quadrotor which is recording images and saving them on a SD Card. The apriltag is applied OFFLINE. We are currently working on an ONLINE solution
+
+[![november 2016](https://img.youtube.com/vi/cpYgeW6D_vk/0.jpg)](https://www.youtube.com/watch?v=cpYgeW6D_vk "test1")
+
+2. Figured out how to get a bearing information from the apriltag algorithm
+
+[![december 2016](https://img.youtube.com/vi/javKrPixwNg/0.jpg)](https://www.youtube.com/watch?v=javKrPixwNg "test1")
 
 IROS 2016 PAPER
 ==================
