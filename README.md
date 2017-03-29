@@ -166,7 +166,8 @@ and have as an output
 this is the output if there is no camera publishing on the topic speicified [HERE](https://github.com/fabrizioschiano/apriltag2/blob/master/apriltag2_example/src/node.cpp#L133
 )
 
-PRELIMINARY RESULTS <a name="preliminaryResults"></a>
+<a name="preliminaryResults"></a>
+PRELIMINARY RESULTS 
 ====================
 
 1. Flying with a quadrotor which is recording images and saving them on a SD Card. The apriltag is applied OFFLINE. We are currently working on an ONLINE solution
