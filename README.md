@@ -9,6 +9,10 @@ Specifically we would like to carry out these experiments with bearing informati
 
 [![IROS 2016](https://img.youtube.com/vi/OqPs3fv0zQg/0.jpg)](https://www.youtube.com/watch?v=OqPs3fv0zQg "A Rigidity-Based Decentralized Bearing Formation Controller for Groups of Quadrotors UAVs - IROS 2016")
 
+The following is a picture of one of the first flights we did with apriltags mounted on our quadrotors:
+
+<img src="https://github.com/fabrizioschiano/apriltag2/blob/master/pictures/apriltagFlying.jpg" width="600"/>
+
 More about me can be found here: http://www.irisa.fr/lagadic/team/Fabrizio.Schiano.html
 
 My goal is to extract a bearing vector from a monocular camera. A bearing vector beta_ij is a unit-norm vector which goes from the robot i to the robot j and it is expressed in the body frame of robot i. In order to do this I would like to use the apriltag2 algorithm. 
@@ -16,9 +20,8 @@ All this is driven by the need of detection of multiple quadrotor UAVs through o
 
 In the following video you could see how my system is working for now. I am using a flea3 by Pointgrey, converting its image in OpenCV and streaming it (with the camera_info topic) over ROS. Then there is a node which is subscribing to the image+camera_info and applying the apriltag2 algorithm to the image. This node is then publishing the pose of the tag in the camera frame.
 
-1 - https://youtu.be/cpYgeW6D_vk
-
-2 - https://youtu.be/javKrPixwNg
+Check [HERE](#preliminaryResults)
+ for some videos of preliminary results of what I am doing.
 
 This repository is coming from the folder apriltag-2016-10-21. I downloaded it here:
 https://april.eecs.umich.edu/software/apriltag.html
@@ -163,7 +166,7 @@ and have as an output
 this is the output if there is no camera publishing on the topic speicified [HERE](https://github.com/fabrizioschiano/apriltag2/blob/master/apriltag2_example/src/node.cpp#L133
 )
 
-PRELIMINARY RESULTS
+PRELIMINARY RESULTS <a name="preliminaryResults"></a>
 ====================
 
 1. Flying with a quadrotor which is recording images and saving them on a SD Card. The apriltag is applied OFFLINE. We are currently working on an ONLINE solution
