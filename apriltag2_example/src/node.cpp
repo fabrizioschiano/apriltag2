@@ -128,8 +128,12 @@ void Node::spin(int argc, char** argv){
     //    }
     //    string camera_info_topic_ = camera_info_topic;
     //    string image_topic_ = image_topic;
-    message_filters::Subscriber<sensor_msgs::Image> raw_image_subscriber(nh_, image_topic, queue_size_);
-    message_filters::Subscriber<sensor_msgs::CameraInfo> camera_info_subscriber(nh_, camera_info_topic, queue_size_);
+//    message_filters::Subscriber<sensor_msgs::Image> raw_image_subscriber(nh_, image_topic, queue_size_);
+//    message_filters::Subscriber<sensor_msgs::CameraInfo> camera_info_subscriber(nh_, camera_info_topic, queue_size_);
+    message_filters::Subscriber<sensor_msgs::Image> raw_image_subscriber(nh_, "/camera6_quadro6/image_mono", queue_size_);
+    message_filters::Subscriber<sensor_msgs::CameraInfo> camera_info_subscriber(nh_, "/camera6_quadro6/camera_info", queue_size_);
+
+
 
     cout<< "camera_image_topic: " <<  image_topic << endl;
     cout<< "camera_info_topic: "  <<  camera_info_topic  << endl;
