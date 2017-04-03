@@ -1,7 +1,11 @@
 # apriltag2
 
-**I am not the author of this algorithm. I am just trying to use it. 
-My goal is to use it for a group of quadrotor UAVs equipped with onboard cameras (flea FL3-U3-32S2C).**
+**I am not the author of the apriltag2 algorithm. I am just trying to use it. 
+My goal is to use it for a group of quadrotor UAVs equipped with onboard cameras.**
+
+We would like to test the apriltag2 on the following cameras:
+1. [flea FL3-U3-32S2C](https://www.ptgrey.com/flea3-32-mp-color-usb3-vision-sony-imx036-camera)
+2. We are considering to use also a [basler Dart area scan camera](http://www.baslerweb.com/en/products/cameras/area-scan-cameras/dart/daa1600-60uc).
 
 Specifically we would like to carry out these experiments with bearing information coming directly from the apriltag2 algorithm running on the ODROIDs embedded on the quadrotors
 
