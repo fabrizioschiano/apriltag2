@@ -17,19 +17,28 @@ The following is a picture of one of the first flights we did with apriltags mou
 
 <img src="https://github.com/fabrizioschiano/apriltag2/blob/master/pictures/apriltagFlying.jpg" width="600"/>
 
-More about me can be found here: http://www.irisa.fr/lagadic/team/Fabrizio.Schiano.html
+More about me can be found [here](http://www.irisa.fr/lagadic/team/Fabrizio.Schiano.html)
 
 My goal is to extract a bearing vector from a monocular camera. A bearing vector beta_ij is a unit-norm vector which goes from the robot i to the robot j and it is expressed in the body frame of robot i. In order to do this I would like to use the apriltag2 algorithm. 
-All this is driven by the need of detection of multiple quadrotor UAVs through onboard cameras (a flea3 by PointGrey: https://www.ptgrey.com/flea3-32-mp-color-usb3-vision-sony-imx036-camera) in order to retrieve a bearing IJ measurement (i.e. a unit-vector that goes from the origin of the body frame of the robot I to the origin of the body frame of the robot J). 
+All this is driven by the need of detection of multiple quadrotor UAVs through onboard cameras ([a flea3 by PointGrey](https://www.ptgrey.com/flea3-32-mp-color-usb3-vision-sony-imx036-camera)) in order to retrieve a bearing IJ measurement (i.e. a unit-vector that goes from the origin of the body frame of the robot I to the origin of the body frame of the robot J). 
 
 In the following video you could see how my system is working for now. I am using a flea3 by Pointgrey, converting its image in OpenCV and streaming it (with the camera_info topic) over ROS. Then there is a node which is subscribing to the image+camera_info and applying the apriltag2 algorithm to the image. This node is then publishing the pose of the tag in the camera frame.
 
 Check [HERE](#preliminaryResults)
  for some videos of preliminary results of what I am doing.
 
-This repository is coming from the folder apriltag-2016-10-21. I downloaded it here:
-https://april.eecs.umich.edu/software/apriltag.html
+ABOUT THE REPOSITORY
+=======
 
+**ATTENTION**: This repository is made of 2 parts
+
+
+**The first part is the one** coming from the folder apriltag-2016-10-21. I downloaded it [here](https://april.eecs.umich.edu/software/apriltag.html). In this part there is basically all the apriltag2 code and it is written in C.
+
+**The second part is the one** which I wrote and it is needed to publish the apriltag2 data over the ROS network. This part is the one contained in the folder [apriltag2_example](https://github.com/fabrizioschiano/apriltag2/tree/master/apriltag2_example).
+
+Apriltag in brief
+----------------
 AprilTag is a visual fiducial system, useful for a wide variety of tasks including augmented reality, robotics, and camera calibration. Targets can be created from an ordinary printer, and the AprilTag detection software computes the precise 3D position, orientation, and identity of the tags relative to the camera. Implementations are available in Java, as well as in C. Notably, the C implementation has no external dependencies and is designed to be easily included in other applications, as well as portable to embedded devices. Real-time performance can be achieved even on cell-phone grade processors.
 
 INSTALL
