@@ -200,3 +200,15 @@ PRELIMINARY RESULTS
 
 [![december 2016](https://img.youtube.com/vi/javKrPixwNg/0.jpg)](https://www.youtube.com/watch?v=javKrPixwNg "test1")
 
+
+FLEA CAMERA IMAGE RESOLUTION
+====================
+The [camera](https://www.ptgrey.com/flea3-32-mp-color-usb3-vision-sony-imx036-camera) we are using has a maximum resolution of `2080x1552`. We chose to do a binning of the image _in hardware on the sensor_ (there is an alternative binning you can do in software through ROS) and in this way the apriltag2 algorithm has to deal with an image which is `1040x776`. The binning is changing the resolution of the image without changing the region of interest (ROI). The 2 different images can be seen below:
+
+- `2080x1552`
+
+ <img src="https://github.com/fabrizioschiano/apriltag2/blob/master/pictures/apriltagResHigh.png" width="300"/>
+
+- `1040x776`
+
+<img src="https://github.com/fabrizioschiano/apriltag2/blob/master/pictures/apriltagResLow.png" width="300"/>
