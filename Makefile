@@ -1,7 +1,5 @@
 PREFIX ?= /usr/local
 
-PREFIX_APRILTAG_EXAMPLE ?=/home/fschiano/Repositories/apriltag2/apriltag2_example/lib
-
 CC = gcc
 AR = ar
 
@@ -19,9 +17,7 @@ all: $(TARGETS)
 
 .PHONY: install
 install: libapriltag.so
-	@chmod +x install.sh
 	@./install.sh $(PREFIX)/lib libapriltag.so #this should be the line that install the library
-	@./install.sh $(PREFIX_APRILTAG_EXAMPLE) libapriltag.so
 	@./install.sh $(PREFIX)/include/apriltag $(APRILTAG_HEADERS)
 	@sed 's:^prefix=$$:prefix=$(PREFIX):' < apriltag.pc.in > apriltag.pc
 	@./install.sh $(PREFIX)/lib/pkgconfig apriltag.pc
@@ -38,7 +34,7 @@ libapriltag.so: $(APRILTAG_OBJS)
 
 %.o: %.c
 	@echo "   $@"
-	@$(CC) -o $@ -c $< $(CFLAGS)
+	@$(CC) -I. -o $@ -c $< $(CFLAGS)
 
 .PHONY: clean
 clean:

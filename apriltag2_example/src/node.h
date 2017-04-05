@@ -18,7 +18,7 @@
 #include "flycapture/FlyCapture2.h"
 
 // Include for the apriltags
-#include "apriltag.h"
+#include <apriltag.h>
 #include "tag36h11.h"
 #include "tag36h10.h"
 #include "tag36artoolkit.h"
