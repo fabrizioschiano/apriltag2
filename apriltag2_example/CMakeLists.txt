@@ -62,10 +62,10 @@ generate_messages(
 
 catkin_package(
     INCLUDE_DIRS
-    include
+    #include
 
     LIBRARIES
-    test_subscriber
+    #test_subscriber
 
     CATKIN_DEPENDS
     image_transport
@@ -103,31 +103,31 @@ message("-->Boost_INCLUDE_DIRS:${Boost_INCLUDE_DIRS}")
 message("-->...done")
 
 # Declare a cpp library
-add_library(test_subscriber
-    ${APRILTAG2_EXAMPLE_SRC_FOLDER}/test_subscriber.h
-    ${APRILTAG2_EXAMPLE_SRC_FOLDER}/test_subscriber.cpp
-    )
+#add_library(test_subscriber
+#    ${APRILTAG2_EXAMPLE_SRC_FOLDER}/test_subscriber.h
+#    ${APRILTAG2_EXAMPLE_SRC_FOLDER}/test_subscriber.cpp
+#    )
 
 
 
 #DEBUG
-message( "-->CMAKE_BUILD_DIRECTORY=\n${CMAKE_BUILD_DIRECTORY}\n")
-message("--> include_directories...\n")
-message("--> catkin_INCLUDE_DIRS: ${catkin_INCLUDE_DIRS}")
-message("--> Eigen_INCLUDE_DIRS: ${Eigen_INCLUDE_DIRS}")
+#message( "-->CMAKE_BUILD_DIRECTORY=\n${CMAKE_BUILD_DIRECTORY}\n")
+#message("--> include_directories...\n")
+#message("--> catkin_INCLUDE_DIRS: ${catkin_INCLUDE_DIRS}")
+#message("--> Eigen_INCLUDE_DIRS: ${Eigen_INCLUDE_DIRS}")
 #DEBUG
 #message( "-->VISP_INCLUDE_DIRS= ${VISP_INCLUDE_DIRS}")
 #message( "-->VISP_LIBRARIES= ${VISP_LIBRARIES}")
-message("-->CMAKE_BINARY_DIR= ${CMAKE_BINARY_DIR}")
-message("-->CMAKE_CURRENT_SOURCE_DIR= ${CMAKE_CURRENT_SOURCE_DIR}")
+#message("-->CMAKE_BINARY_DIR= ${CMAKE_BINARY_DIR}")
+#message("-->CMAKE_CURRENT_SOURCE_DIR= ${CMAKE_CURRENT_SOURCE_DIR}")
 
 set( CMAKE_BUILD_TYPE Release)
 set( CMAKE_BUILD_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/_build")
-message("-->CMAKE_BUILD_DIRECTORY= ${CMAKE_BUILD_DIRECTORY}")
+#message("-->CMAKE_BUILD_DIRECTORY= ${CMAKE_BUILD_DIRECTORY}")
 
 find_library(FLYCAPTURE2 flycapture)
 
-add_executable( opencvDemo_exe opencv_demo.cc )
+#add_executable( opencvDemo_exe opencv_demo.cc )
 
 find_library(APRILTAG_LIBRARY
 	NAMES apriltag
@@ -140,14 +140,16 @@ message("-->APRILTAG_LIBRARY: ${APRILTAG_LIBRARY}")
 # Needed libraries
 set (EXTRA_LIBS ${APRILTAG_LIBRARY} flycapture ${OpenCV_LIBS} ${VISP_LIBRARIES} ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
-target_link_libraries( opencvDemo_exe ${EXTRA_LIBS})
+#target_link_libraries( opencvDemo_exe ${EXTRA_LIBS})
 
-target_link_libraries( test_subscriber ${EXTRA_LIBS})
+#add_dependencies(opencvDemo_exe ${${opencvDemo_exe}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+#target_link_libraries( test_subscriber ${EXTRA_LIBS})
 #add_executable( test_sub test_subscriber.cpp )
 
 
-add_executable(test_subscriber_node ${APRILTAG2_EXAMPLE_SRC_FOLDER}/main_test_sub.cpp)
-target_link_libraries( test_subscriber_node ${EXTRA_LIBS} test_subscriber)
+#add_executable(test_subscriber_node ${APRILTAG2_EXAMPLE_SRC_FOLDER}/main_test_sub.cpp)
+#target_link_libraries( test_subscriber_node ${EXTRA_LIBS} test_subscriber)
 
 
 #add_executable(apriltag2_test apriltag2_pub_sub.cpp)
