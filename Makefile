@@ -1,10 +1,7 @@
 PREFIX ?= /usr/local
 
-<<<<<<< HEAD
-PREFIX_APRILTAG_EXAMPLE ?=/udd/pmordel/ros/indigo/catkin_src/apriltag2/apriltag2_example/lib
+#PREFIX_APRILTAG_EXAMPLE ?=/udd/pmordel/ros/indigo/catkin_src/apriltag2/apriltag2_example/lib
 
-=======
->>>>>>> 59807e1a42010067cd17e8ae7510acc684bba366
 CC = gcc
 AR = ar
 
@@ -23,7 +20,9 @@ all: $(TARGETS)
 
 .PHONY: install
 install: libapriltag.so
+	#@chmod +x install.sh
 	@./install.sh $(PREFIX)/lib libapriltag.so #this should be the line that install the library
+	#@./install.sh $(PREFIX_APRILTAG_EXAMPLE) libapriltag.so
 	@./install.sh $(PREFIX)/include/apriltag $(APRILTAG_HEADERS)
 	@sed 's:^prefix=$$:prefix=$(PREFIX):' < apriltag.pc.in > apriltag.pc
 	@./install.sh $(PREFIX)/lib/pkgconfig apriltag.pc
