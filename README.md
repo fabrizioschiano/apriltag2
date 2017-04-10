@@ -6,7 +6,7 @@ ABOUT THE REPOSITORY
 **ATTENTION**: This repository is made of 2 parts
 
 
-**The first part is the one** coming from the folder apriltag-2016-10-21. I downloaded it [here](https://april.eecs.umich.edu/software/apriltag.html). In this part there is basically all the apriltag2 code and it is written in C.
+**The first part is the one** coming from the folder apriltag-2016-10-21. I downloaded it [here](https://april.eecs.umich.edu/software/apriltag.html). In this part there is basically all the apriltag2 code and it is written in C. We need to update our algorithm as soon as possible to the last available version of the apriltag2 which is the one of the 2016/12/01. 
 
 **The second part is the one** which I wrote and it is needed to publish the apriltag2 data over the ROS network. This part is the one contained in the folder [apriltag2_example](https://github.com/fabrizioschiano/apriltag2/tree/master/apriltag2_example).
 
