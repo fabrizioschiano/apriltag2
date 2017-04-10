@@ -52,6 +52,8 @@ add_message_files(
     AprilTagDetectionArray.msg
     )
 
+
+
 generate_messages(
     DEPENDENCIES
     std_msgs
@@ -159,6 +161,8 @@ add_executable(apriltag2_exe
     ${APRILTAG2_EXAMPLE_SRC_FOLDER}/names.cpp
     ${APRILTAG2_EXAMPLE_SRC_FOLDER}/names.h
     )
+
+add_dependencies(apriltag2_exe ${${apriltag2_exe}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 target_link_libraries(apriltag2_exe
     ${EXTRA_LIBS}
