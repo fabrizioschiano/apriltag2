@@ -1,12 +1,10 @@
-/* (C) 2013-2016, The Regents of The University of Michigan
+/* Copyright (C) 2013-2016, The Regents of The University of Michigan.
 All rights reserved.
 
 This software was developed in the APRIL Robotics Lab under the
 direction of Edwin Olson, ebolson@umich.edu. This software may be
-available under alternative licensing terms; contact the address
-above.
+available under alternative licensing terms; contact the address above.
 
-   BSD
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
 
@@ -29,8 +27,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 The views and conclusions contained in the software and documentation are those
 of the authors and should not be interpreted as representing official policies,
-either expressed or implied, of the FreeBSD Project.
- */
+either expressed or implied, of the Regents of The University of Michigan.
+*/
 
 #ifndef _APRILTAG_H
 #define _APRILTAG_H
@@ -46,7 +44,6 @@ extern "C" {
 #include "common/zarray.h"
 #include "common/workerpool.h"
 #include "common/timeprofile.h"
-#include "common/homography.h"
 #include <pthread.h>
 
 #define APRILTAG_TASKS_PER_THREAD_TARGET 10
@@ -118,7 +115,8 @@ struct apriltag_quad_thresh_params
     // [0,255]). .
     int min_white_black_diff;
 
-    // should the thresholded image be deglitched? This
+    // should the thresholded image be deglitched? Only useful for
+    // very noisy images
     int deglitch;
 };
 
@@ -259,16 +257,7 @@ void apriltag_detector_add_family_bits(apriltag_detector_t *td, apriltag_family_
 // you want the largest value possible.
 static inline void apriltag_detector_add_family(apriltag_detector_t *td, apriltag_family_t *fam)
 {
-    // Fabrizio: I added this part to remove the too many false positives when using the
-    //           tag16h5 family
-    if (!strcmp(fam->name,"tag16h5")) {
-//        printf("-->FamilyName: %s\n Choose bits_corrected = 0", fam->name);
-        apriltag_detector_add_family_bits(td, fam, 0);
-    } else {
-//        printf("-->FamilyName: %s\n Choose bits_corrected = 2", fam->name);
-        apriltag_detector_add_family_bits(td, fam, 2);
-    }
-
+    apriltag_detector_add_family_bits(td, fam, 2);
 }
 
 // does not deallocate the family.
