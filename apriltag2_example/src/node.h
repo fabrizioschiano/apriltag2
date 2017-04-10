@@ -18,7 +18,7 @@
 #include "flycapture/FlyCapture2.h"
 
 // Include for the apriltags
-#include "apriltag.h"
+#include <apriltag.h>
 #include "tag36h11.h"
 #include "tag36h10.h"
 #include "tag36artoolkit.h"
@@ -49,51 +49,53 @@
 //#include <boost/signals2/mutex.hpp>
 #include "boost/thread/mutex.hpp"
 
-namespace apriltag2_detector_ros {
-class Node{
-private:
-    boost::mutex lock_;
-    ros::NodeHandle nh_;
-    unsigned long queue_size_;
-    //                std::string tracker_config_path_;
-    //                std::string model_description_;
-    //                std::string color_file_path_;
-    //                std::string model_name_;
-    //                std::string camera_frame_name_;
-    //                bool debug_display_;
-    //                std::vector <vpPoint> points;
-    //                double dist_point_;
-    //                vpBlobsTargetTracker tracker_;
-    //                bool status_tracker_;
-    //                bool pub_des_pose_;
-    //                bool pub_object_cog_;
-    //                vpHomogeneousMatrix cMh_d_;
-    //                vpHomogeneousMatrix cMh_d_offset;
-    bool first_time;
-    //                bool move_des_pose;
-    //                double d_t;
-    //                double d_r;
-    //                vpHomogeneousMatrix cMo;
+namespace apriltag2_detector_ros 
+{
+    class Node
+    {
+        private:
+            boost::mutex lock_;
+            ros::NodeHandle nh_;
+            unsigned long queue_size_;
+            //                std::string tracker_config_path_;
+            //                std::string model_description_;
+            //                std::string color_file_path_;
+            //                std::string model_name_;
+            //                std::string camera_frame_name_;
+            //                bool debug_display_;
+            //                std::vector <vpPoint> points;
+            //                double dist_point_;
+            //                vpBlobsTargetTracker tracker_;
+            //                bool status_tracker_;
+            //                bool pub_des_pose_;
+            //                bool pub_object_cog_;
+            //                vpHomogeneousMatrix cMh_d_;
+            //                vpHomogeneousMatrix cMh_d_offset;
+            bool first_time;
+            //                bool move_des_pose;
+            //                double d_t;
+            //                double d_r;
+            //                vpHomogeneousMatrix cMo;
 
-    cv_bridge::CvImagePtr cv_ptr;
-    cv::Mat cvI_;
-    //                vpImage<unsigned char> I_; // Image used for debug display
-    std_msgs::Header image_header_;
-    bool got_image_;
-    //                vpCameraParameters cam_;
-    unsigned int lastHeaderSeq_;
-    int freq_;
+            cv_bridge::CvImagePtr cv_ptr;
+            cv::Mat cvI_;
+            //                vpImage<unsigned char> I_; // Image used for debug display
+            std_msgs::Header image_header_;
+            bool got_image_;
+            //                vpCameraParameters cam_;
+            unsigned int lastHeaderSeq_;
+            int freq_;
 
-    void waitForImage();
-    void frameCallback(const sensor_msgs::ImageConstPtr& image, const sensor_msgs::CameraInfoConstPtr& cam_info);
-    const void manageInputKey(const std::string s);
-    void computeCog(double p[4][2], double (&returnArray)[2]);
-    void rotationMatrixZ(double alpha, cv::Mat_<float>& R_z_90);
-public:
-    Node();
-    void spin(int argc, char** argv);
-
-};
+            void waitForImage();
+            void frameCallback(const sensor_msgs::ImageConstPtr& image, const sensor_msgs::CameraInfoConstPtr& cam_info);
+            const void manageInputKey(const std::string s);
+            void computeCog(double p[4][2], double (&returnArray)[2]);
+            void rotationMatrixZ(double alpha, cv::Mat_<float>& R_z_90);
+        public:
+            Node();
+            void spin(int argc, char** argv);
+        
+    };
 
 }
 

@@ -3,6 +3,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(apriltag2_example)
 
+
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
@@ -38,7 +39,7 @@ find_package(catkin REQUIRED COMPONENTS
     message_filters
     )
 
-find_package(Eigen REQUIRED)
+find_package(Eigen3 REQUIRED)
 find_package( OpenCV REQUIRED )
 #find_package(VISP REQUIRED)
 
@@ -89,8 +90,8 @@ include_directories(
     ${Boost_INCLUDE_DIRS}
     ${EIGEN3_INCLUDE_DIR}
     ${APRILTAG2_EXAMPLE_INCLUDE_FOLDER}
-    "/home/fschiano/Repositories/apriltag2"
-    "/home/fschiano/Repositories/apriltag2/common"
+    "/udd/pmordel/ros/indigo/catkin_src/apriltag2"
+    "/udd/pmordel/ros/indigo/catkin_src/apriltag2/common"
     )
 
 # Make sure Boost.Filesystem v3 is used.
@@ -126,11 +127,16 @@ find_library(FLYCAPTURE2 flycapture)
 
 add_executable( opencvDemo_exe opencv_demo.cc )
 
-set(apriltagSharedLibrary ${CMAKE_CURRENT_SOURCE_DIR}/lib/libapriltag.so)
-message("-->apriltagSharedLibrary: ${apriltagSharedLibrary}")
+find_library(APRILTAG_LIBRARY
+	NAMES apriltag
+	PATHS /udd/pmordel/ros/indigo/catkin_src/apriltag2
+)
+
+#set(apriltagSharedLibrary ${CMAKE_CURRENT_SOURCE_DIR} libapriltag.so)
+message("-->APRILTAG_LIBRARY: ${APRILTAG_LIBRARY}")
 
 # Needed libraries
-set (EXTRA_LIBS ${apriltagSharedLibrary} flycapture ${OpenCV_LIBS} ${VISP_LIBRARIES} ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+set (EXTRA_LIBS ${APRILTAG_LIBRARY} flycapture ${OpenCV_LIBS} ${VISP_LIBRARIES} ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
 target_link_libraries( opencvDemo_exe ${EXTRA_LIBS})
 

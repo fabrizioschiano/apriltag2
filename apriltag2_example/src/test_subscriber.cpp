@@ -11,7 +11,8 @@
 
 //namespace std;
 
-test_subscriber::test_subscriber(ros::NodeHandle &nh){
+test_subscriber::test_subscriber(ros::NodeHandle &nh)
+{
     m_n = nh;
 
     m_n.param<std::string>("cameraInfoName", m_cameraInfoName, "/camera/camera_info");
@@ -25,7 +26,8 @@ test_subscriber::test_subscriber(ros::NodeHandle &nh){
 }
 
 
-test_subscriber::~test_subscriber(){
+test_subscriber::~test_subscriber()
+{
     //    delete m_motionProxy;
 
 }
@@ -50,7 +52,8 @@ void test_subscriber::getCameraInfoCb(const sensor_msgs::CameraInfoConstPtr &msg
 void test_subscriber::spin()
 {
     ros::Rate loop_rate(freq);
-    while(ros::ok()){
+    while(ros::ok())
+    {
 
         //    vpMouseButton::vpMouseButtonType button;
         //    bool ret = vpDisplay::getClick(I, button, false);
