@@ -1,19 +1,10 @@
-# Author
+# Author : Fabrizio SCHIANO
+
+## Last update : Pol MORDEL 10/04/17
+# add_dependecies for apriltag2_exe and clean the file
 
 cmake_minimum_required(VERSION 2.8.3)
 project(apriltag2_example)
-
-
-## Find catkin macros and libraries
-## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
-## is used, also find other catkin packages
-# find_package(catkin REQUIRED COMPONENTS
-#   roscpp
-#   sensor_msgs
-#   geometry_msgs
-#   tf
-#   cmake_modules
-# )
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -25,6 +16,7 @@ set(APRILTAG2_EXAMPLE_INCLUDE_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/include)
 message("-->APRILTAG2_EXAMPLE_SRC_FOLDER: ${APRILTAG2_EXAMPLE_SRC_FOLDER}")
 message("-->APRILTAG2_EXAMPLE_INCLUDE_FOLDER: ${APRILTAG2_EXAMPLE_INCLUDE_FOLDER}")
 
+# Get the information about this package's buildtime dependencies
 find_package(catkin REQUIRED COMPONENTS
     image_transport
     roscpp
@@ -40,32 +32,31 @@ find_package(catkin REQUIRED COMPONENTS
     )
 
 find_package(Eigen3 REQUIRED)
-find_package( OpenCV REQUIRED )
-#find_package(VISP REQUIRED)
+find_package(OpenCV REQUIRED)
 
 find_package(Boost REQUIRED
     COMPONENTS filesystem system signals regex date_time program_options thread)
 
+# Declare the message files to be built
 add_message_files(
     FILES
     AprilTagDetection.msg
     AprilTagDetectionArray.msg
     )
 
-
-
+# Actually generate the language-specific message and service files
 generate_messages(
     DEPENDENCIES
     std_msgs
     geometry_msgs
     )
 
+# Declare that this catkin package's runtime dependencies
 catkin_package(
     INCLUDE_DIRS
     #include
 
     LIBRARIES
-    #test_subscriber
 
     CATKIN_DEPENDS
     image_transport
@@ -82,11 +73,6 @@ catkin_package(
     DEPENDS
     Eigen
     )
-#include_directories(include )
-#include_directories("/home/fschiano/Repositories/apriltag2")
-#include_directories("/home/fschiano/Repositories/apriltag2/common")
-##include_directories(${VISP_INCLUDE_DIRS})
-#include_directories(${EIGEN3_INCLUDE_DIR})
 
 include_directories(
     ${Boost_INCLUDE_DIRS}
@@ -102,60 +88,23 @@ add_definitions(-DBOOST_FILESYSTEM_VERSION=3)
 message("-->Boost_INCLUDE_DIRS:${Boost_INCLUDE_DIRS}")
 message("-->...done")
 
-# Declare a cpp library
-#add_library(test_subscriber
-#    ${APRILTAG2_EXAMPLE_SRC_FOLDER}/test_subscriber.h
-#    ${APRILTAG2_EXAMPLE_SRC_FOLDER}/test_subscriber.cpp
-#    )
-
-
-
-#DEBUG
-#message( "-->CMAKE_BUILD_DIRECTORY=\n${CMAKE_BUILD_DIRECTORY}\n")
-#message("--> include_directories...\n")
-#message("--> catkin_INCLUDE_DIRS: ${catkin_INCLUDE_DIRS}")
-#message("--> Eigen_INCLUDE_DIRS: ${Eigen_INCLUDE_DIRS}")
-#DEBUG
-#message( "-->VISP_INCLUDE_DIRS= ${VISP_INCLUDE_DIRS}")
-#message( "-->VISP_LIBRARIES= ${VISP_LIBRARIES}")
-#message("-->CMAKE_BINARY_DIR= ${CMAKE_BINARY_DIR}")
-#message("-->CMAKE_CURRENT_SOURCE_DIR= ${CMAKE_CURRENT_SOURCE_DIR}")
 
 set( CMAKE_BUILD_TYPE Release)
 set( CMAKE_BUILD_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/_build")
-#message("-->CMAKE_BUILD_DIRECTORY= ${CMAKE_BUILD_DIRECTORY}")
 
 find_library(FLYCAPTURE2 flycapture)
-
-#add_executable( opencvDemo_exe opencv_demo.cc )
 
 find_library(APRILTAG_LIBRARY
 	NAMES apriltag
 	PATHS /udd/pmordel/ros/indigo/catkin_src/apriltag2
 )
 
-#set(apriltagSharedLibrary ${CMAKE_CURRENT_SOURCE_DIR} libapriltag.so)
 message("-->APRILTAG_LIBRARY: ${APRILTAG_LIBRARY}")
 
 # Needed libraries
 set (EXTRA_LIBS ${APRILTAG_LIBRARY} flycapture ${OpenCV_LIBS} ${VISP_LIBRARIES} ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
-#target_link_libraries( opencvDemo_exe ${EXTRA_LIBS})
-
-#add_dependencies(opencvDemo_exe ${${opencvDemo_exe}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-#target_link_libraries( test_subscriber ${EXTRA_LIBS})
-#add_executable( test_sub test_subscriber.cpp )
-
-
-#add_executable(test_subscriber_node ${APRILTAG2_EXAMPLE_SRC_FOLDER}/main_test_sub.cpp)
-#target_link_libraries( test_subscriber_node ${EXTRA_LIBS} test_subscriber)
-
-
-#add_executable(apriltag2_test apriltag2_pub_sub.cpp)
-#target_link_libraries( apriltag2_test ${EXTRA_LIBS} test_subscriber)
-
-
+# Define executable apriltag2_exe using messages provided by this package.
 add_executable(apriltag2_exe
     ${APRILTAG2_EXAMPLE_SRC_FOLDER}/apriltag2_pub_sub.cpp
     ${APRILTAG2_EXAMPLE_SRC_FOLDER}/node.cpp
@@ -166,6 +115,7 @@ add_executable(apriltag2_exe
 
 add_dependencies(apriltag2_exe ${${apriltag2_exe}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
+# specify which libraries apriltag2_exe links against
 target_link_libraries(apriltag2_exe
     ${EXTRA_LIBS}
     )
