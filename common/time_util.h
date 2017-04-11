@@ -1,12 +1,10 @@
-/* (C) 2013-2016, The Regents of The University of Michigan
+/* Copyright (C) 2013-2016, The Regents of The University of Michigan.
 All rights reserved.
 
 This software was developed in the APRIL Robotics Lab under the
 direction of Edwin Olson, ebolson@umich.edu. This software may be
-available under alternative licensing terms; contact the address
-above.
+available under alternative licensing terms; contact the address above.
 
-   BSD
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
 
@@ -29,12 +27,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 The views and conclusions contained in the software and documentation are those
 of the authors and should not be interpreted as representing official policies,
-either expressed or implied, of the FreeBSD Project.
- */
+either expressed or implied, of the Regents of The University of Michigan.
+*/
 
 #ifndef _TIME_UTIL_H
 #define _TIME_UTIL_H
 
+#include <stdbool.h>
 #include <stdint.h>
 #include <sys/time.h>
 #include <time.h>
@@ -57,6 +56,11 @@ void    utime_to_timespec(int64_t v, struct timespec *ts);
 int32_t  timeutil_usleep(int64_t useconds);
 uint32_t timeutil_sleep(unsigned int seconds);
 int32_t  timeutil_sleep_hz(timeutil_rest_t *rest, double hz);
+
+void timeutil_timer_reset(timeutil_rest_t *rest);
+void timeutil_timer_start(timeutil_rest_t *rest);
+void timeutil_timer_stop(timeutil_rest_t *rest);
+bool timeutil_timer_timeout(timeutil_rest_t *rest, double timeout_s);
 
 int64_t time_util_hhmmss_ss_to_utime(double time);
 
