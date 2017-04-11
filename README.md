@@ -1,7 +1,34 @@
 # apriltag2
 
+
 **I am not the author of the apriltag2 algorithm. I am just trying to use it. 
 My goal is to use it for a group of quadrotor UAVs equipped with onboard cameras.**
+=======
+ABOUT THE REPOSITORY
+=======
+
+**ATTENTION**: This repository is made of 2 parts
+
+
+**The first part is the one** coming from the folder apriltag-2016-10-21. I downloaded it [here](https://april.eecs.umich.edu/software/apriltag.html). In this part there is basically all the apriltag2 code and it is written in C. We need to update our algorithm as soon as possible to the last available version of the apriltag2 which is the one of the 2016/12/01. 
+
+**The second part is the one** which I wrote and it is needed to publish the apriltag2 data over the ROS network. This part is the one contained in the folder [apriltag2_example](https://github.com/fabrizioschiano/apriltag2/tree/master/apriltag2_example).
+
+Apriltag in brief
+----------------
+AprilTag is a visual fiducial system, useful for a wide variety of tasks including augmented reality, robotics, and camera calibration. Targets can be created from an ordinary printer, and the AprilTag detection software computes the precise 3D position, orientation, and identity of the tags relative to the camera. Implementations are available in Java, as well as in C. Notably, the C implementation has no external dependencies and is designed to be easily included in other applications, as well as portable to embedded devices. Real-time performance can be achieved even on cell-phone grade processors.
+
+The two main papers to refer to understand the apriltag algorithm are the following:
+1. [IROS 2016 - AprilTag 2: Efficient and robust fiducial detection](https://april.eecs.umich.edu/media/pdfs/wang2016iros.pdf): this is the paper which refers to the version of the algorithm that we want to use
+2. [ICRA 2011 - AprilTag: A robust and flexible visual fiducial system](http://ieeexplore.ieee.org/abstract/document/5979561/): this is the paper which explains how the first version of the algorithm works
+
+**I am not the author of the apriltag2 algorithm. We are trying to use the apriltag2 algorithm over ROS.** Something like that was already done for the first version of the apriltag algorithm and can be found [here](https://github.com/RIVeR-Lab/apriltags_ros) 
+
+OUR GOAL
+=========
+
+Our goal is to use it for a group of quadrotor UAVs equipped with onboard cameras.**
+
 
 We would like to test the apriltag2 on the following cameras:
 1. [flea FL3-U3-32S2C](https://www.ptgrey.com/flea3-32-mp-color-usb3-vision-sony-imx036-camera)
@@ -182,7 +209,22 @@ PRELIMINARY RESULTS
 
 [![december 2016](https://img.youtube.com/vi/javKrPixwNg/0.jpg)](https://www.youtube.com/watch?v=javKrPixwNg "test1")
 
+
 IROS 2016 PAPER
 ==================
 For more details about the algorithm look here:
 https://april.eecs.umich.edu/media/pdfs/wang2016iros.pdf
+=======
+
+FLEA CAMERA IMAGE RESOLUTION
+====================
+The [camera](https://www.ptgrey.com/flea3-32-mp-color-usb3-vision-sony-imx036-camera) we are using has a maximum resolution of `2080x1552`. We chose to do a binning of the image _in hardware on the sensor_ (there is an alternative binning you can do in software through ROS) and in this way the apriltag2 algorithm has to deal with an image which is `1040x776`. The binning is changing the resolution of the image without changing the region of interest (ROI). The 2 different images can be seen below:
+
+- `2080x1552`
+
+ <img src="https://github.com/fabrizioschiano/apriltag2/blob/master/pictures/apriltagResHigh.png" width="300"/>
+
+- `1040x776`
+
+<img src="https://github.com/fabrizioschiano/apriltag2/blob/master/pictures/apriltagResLow.png" width="300"/>
+
