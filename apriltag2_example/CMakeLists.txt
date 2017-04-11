@@ -31,7 +31,18 @@ find_package(catkin REQUIRED COMPONENTS
     message_filters
     )
 
-find_package(Eigen3 REQUIRED)
+find_package(Eigen3)
+if(NOT EIGEN3_FOUND)
+  # Fallback to cmake_modules
+  find_package(cmake_modules REQUIRED)
+  find_package(Eigen REQUIRED)
+  set(EIGEN3_INCLUDE_DIRS ${EIGEN_INCLUDE_DIRS})
+  set(EIGEN3_LIBRARIES ${EIGEN_LIBRARIES})  # Not strictly necessary as Eigen is head only
+  # Possibly map additional variables to the EIGEN3_ prefix.
+else()
+  set(EIGEN3_INCLUDE_DIRS ${EIGEN3_INCLUDE_DIR})
+endif()
+
 find_package(OpenCV REQUIRED)
 
 find_package(Boost REQUIRED
@@ -71,15 +82,16 @@ catkin_package(
     std_msgs
 
     DEPENDS
-    Eigen
+    Eigen3
     )
 
 include_directories(
+    ${catkin_INCLUDE_DIRS}
     ${Boost_INCLUDE_DIRS}
-    ${EIGEN3_INCLUDE_DIR}
+    ${EIGEN3_INCLUDE_DIRS}
     ${APRILTAG2_EXAMPLE_INCLUDE_FOLDER}
-    "/udd/pmordel/ros/indigo/catkin_src/apriltag2"
-    "/udd/pmordel/ros/indigo/catkin_src/apriltag2/common"
+    "/home/pmordel/ros/kinetic/catkin_src/apriltag2"
+    "/home/pmordel/ros/kinetic/catkin_src/apriltag2/common"
     )
 
 # Make sure Boost.Filesystem v3 is used.
@@ -96,7 +108,7 @@ find_library(FLYCAPTURE2 flycapture)
 
 find_library(APRILTAG_LIBRARY
 	NAMES apriltag
-	PATHS /udd/pmordel/ros/indigo/catkin_src/apriltag2
+	PATHS /home/pmordel/ros/kinetic/catkin_src/apriltag2
 )
 
 message("-->APRILTAG_LIBRARY: ${APRILTAG_LIBRARY}")
