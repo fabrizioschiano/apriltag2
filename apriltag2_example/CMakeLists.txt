@@ -12,6 +12,8 @@ project(apriltag2_example)
 
 set(APRILTAG2_EXAMPLE_SRC_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(APRILTAG2_EXAMPLE_INCLUDE_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/include)
+set(APRILTAG_DIR ${CMAKE_CURRENT_SOURCE_DIR}/apriltag)
+set(APRILTAG_COMMON_DIR ${CMAKE_CURRENT_SOURCE_DIR}/apriltag-2016-12-01/common)
 
 message("-->APRILTAG2_EXAMPLE_SRC_FOLDER: ${APRILTAG2_EXAMPLE_SRC_FOLDER}")
 message("-->APRILTAG2_EXAMPLE_INCLUDE_FOLDER: ${APRILTAG2_EXAMPLE_INCLUDE_FOLDER}")
@@ -90,8 +92,8 @@ include_directories(
     ${Boost_INCLUDE_DIRS}
     ${EIGEN3_INCLUDE_DIRS}
     ${APRILTAG2_EXAMPLE_INCLUDE_FOLDER}
-    "/home/pmordel/ros/kinetic/catkin_src/apriltag2"
-    "/home/pmordel/ros/kinetic/catkin_src/apriltag2/common"
+    ${APRILTAG_DIR}
+    ${APRILTAG_COMMON_DIR}
     )
 
 # Make sure Boost.Filesystem v3 is used.
@@ -108,7 +110,7 @@ find_library(FLYCAPTURE2 flycapture)
 
 find_library(APRILTAG_LIBRARY
 	NAMES apriltag
-	PATHS /home/pmordel/ros/kinetic/catkin_src/apriltag2
+	PATHS ${APRILTAG_DIR}
 )
 
 message("-->APRILTAG_LIBRARY: ${APRILTAG_LIBRARY}")

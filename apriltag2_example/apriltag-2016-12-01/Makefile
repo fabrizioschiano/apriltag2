@@ -16,7 +16,7 @@ TARGETS := libapriltag.a libapriltag.so
 
 .PHONY: all
 all: $(TARGETS)
-	@$(MAKE) -C apriltag2_example/_build all
+	@$(MAKE) -C build all
 
 .PHONY: install
 install: libapriltag.so
@@ -51,4 +51,4 @@ libapriltag.so: $(APRILTAG_OBJS)
 
 clean:
 	@rm -rf *.o common/*.o $(TARGETS)
-	@$(MAKE) -C apriltag2_example/_build clean
+	@$(MAKE) -C build clean
