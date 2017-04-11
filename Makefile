@@ -29,6 +29,12 @@ install: libapriltag.so
 	@rm apriltag.pc
 	@ldconfig
 
+.PHONY: uninstall
+uninstall:
+	rm -f $(PREFIX)/lib/libapriltag.so
+	rm -rf $(PREFIX)/include/apriltag
+	rm -rf $(PREFIX)/lib/pkgconfig
+
 libapriltag.a: $(APRILTAG_OBJS)
 	@echo "   [$@]"
 	@$(AR) -cq $@ $(APRILTAG_OBJS)

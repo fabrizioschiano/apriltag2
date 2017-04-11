@@ -44,6 +44,7 @@ extern "C" {
 #include "common/zarray.h"
 #include "common/workerpool.h"
 #include "common/timeprofile.h"
+#include "common/homography.h" // POL : I added back this line since we cannot compile our "node.cpp" without it. There is to investigate this issue in the code.
 #include <pthread.h>
 
 #define APRILTAG_TASKS_PER_THREAD_TARGET 10
