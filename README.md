@@ -1,5 +1,9 @@
 # apriltag2
 
+
+**I am not the author of the apriltag2 algorithm. I am just trying to use it. 
+My goal is to use it for a group of quadrotor UAVs equipped with onboard cameras.**
+=======
 ABOUT THE REPOSITORY
 =======
 
@@ -25,6 +29,7 @@ OUR GOAL
 
 Our goal is to use it for a group of quadrotor UAVs equipped with onboard cameras.**
 
+
 We would like to test the apriltag2 on the following cameras:
 1. [flea FL3-U3-32S2C](https://www.ptgrey.com/flea3-32-mp-color-usb3-vision-sony-imx036-camera)
 2. We are considering to use also a [basler Dart area scan camera](http://www.baslerweb.com/en/products/cameras/area-scan-cameras/dart/daa1600-60uc).
@@ -39,16 +44,20 @@ The following is a picture of one of the first flights we did with apriltags mou
 
 <img src="https://github.com/fabrizioschiano/apriltag2/blob/master/pictures/apriltagFlying.jpg" width="600"/>
 
-More about me can be found [here](http://www.irisa.fr/lagadic/team/Fabrizio.Schiano.html)
+More about me can be found here: http://www.irisa.fr/lagadic/team/Fabrizio.Schiano.html
 
 My goal is to extract a bearing vector from a monocular camera. A bearing vector beta_ij is a unit-norm vector which goes from the robot i to the robot j and it is expressed in the body frame of robot i. In order to do this I would like to use the apriltag2 algorithm. 
-All this is driven by the need of detection of multiple quadrotor UAVs through onboard cameras ([a flea3 by PointGrey](https://www.ptgrey.com/flea3-32-mp-color-usb3-vision-sony-imx036-camera)) in order to retrieve a bearing IJ measurement (i.e. a unit-vector that goes from the origin of the body frame of the robot I to the origin of the body frame of the robot J). 
+All this is driven by the need of detection of multiple quadrotor UAVs through onboard cameras (a flea3 by PointGrey: https://www.ptgrey.com/flea3-32-mp-color-usb3-vision-sony-imx036-camera) in order to retrieve a bearing IJ measurement (i.e. a unit-vector that goes from the origin of the body frame of the robot I to the origin of the body frame of the robot J). 
 
 In the following video you could see how my system is working for now. I am using a flea3 by Pointgrey, converting its image in OpenCV and streaming it (with the camera_info topic) over ROS. Then there is a node which is subscribing to the image+camera_info and applying the apriltag2 algorithm to the image. This node is then publishing the pose of the tag in the camera frame.
 
 Check [HERE](#preliminaryResults)
  for some videos of preliminary results of what I am doing.
 
+This repository is coming from the folder apriltag-2016-10-21. I downloaded it here:
+https://april.eecs.umich.edu/software/apriltag.html
+
+AprilTag is a visual fiducial system, useful for a wide variety of tasks including augmented reality, robotics, and camera calibration. Targets can be created from an ordinary printer, and the AprilTag detection software computes the precise 3D position, orientation, and identity of the tags relative to the camera. Implementations are available in Java, as well as in C. Notably, the C implementation has no external dependencies and is designed to be easily included in other applications, as well as portable to embedded devices. Real-time performance can be achieved even on cell-phone grade processors.
 
 INSTALL
 =======
@@ -201,6 +210,12 @@ PRELIMINARY RESULTS
 [![december 2016](https://img.youtube.com/vi/javKrPixwNg/0.jpg)](https://www.youtube.com/watch?v=javKrPixwNg "test1")
 
 
+IROS 2016 PAPER
+==================
+For more details about the algorithm look here:
+https://april.eecs.umich.edu/media/pdfs/wang2016iros.pdf
+=======
+
 FLEA CAMERA IMAGE RESOLUTION
 ====================
 The [camera](https://www.ptgrey.com/flea3-32-mp-color-usb3-vision-sony-imx036-camera) we are using has a maximum resolution of `2080x1552`. We chose to do a binning of the image _in hardware on the sensor_ (there is an alternative binning you can do in software through ROS) and in this way the apriltag2 algorithm has to deal with an image which is `1040x776`. The binning is changing the resolution of the image without changing the region of interest (ROI). The 2 different images can be seen below:
@@ -212,3 +227,4 @@ The [camera](https://www.ptgrey.com/flea3-32-mp-color-usb3-vision-sony-imx036-ca
 - `1040x776`
 
 <img src="https://github.com/fabrizioschiano/apriltag2/blob/master/pictures/apriltagResLow.png" width="300"/>
+

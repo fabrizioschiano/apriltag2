@@ -8,8 +8,7 @@ opencvDemo
 *.stamp
 
 # /apriltag2_example/_build/catkin_generated/setup_cached.sh
-
-/apriltag2_example/_build/*
+/apriltag2_example/apriltag-2016-12-01/build/*
 # /apriltag2_example/_build/catkin_generated/*
 # /apriltag2_example/_build/devel/lib/pkgconfig/*
 *CMakeLists.txt.user
