@@ -61,6 +61,8 @@ AprilTag is a visual fiducial system, useful for a wide variety of tasks includi
 INSTALL
 =======
 
+It is possible that in order to use our repository you will need to install some external libraries. A list of the needed external libraries will appear in this guide as soon as possible.
+
 The default installation will place headers in /usr/local/include and
 shared library in /usr/local/lib. It also installs a pkg-config script
 into /usr/local/lib/pkgconfig.
