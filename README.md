@@ -213,7 +213,7 @@ IROS 2016 PAPER
 ==================
 For more details about the algorithm look here:
 https://april.eecs.umich.edu/media/pdfs/wang2016iros.pdf
-=======
+
 
 FLEA CAMERA IMAGE RESOLUTION
 ====================
