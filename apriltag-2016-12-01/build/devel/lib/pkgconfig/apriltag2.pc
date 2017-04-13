@@ -1,8 +1,0 @@
-prefix=/home/pmordel/ros/indigo/catkin_ws_flylab-gs/src/apriltag2/apriltag-2016-12-01/build/devel
-
-Name: apriltag2
-Description: Description of apriltag2
-Version: 0.0.0
-Cflags: -I/home/pmordel/ros/indigo/catkin_ws_flylab-gs/src/apriltag2/apriltag-2016-12-01/build/devel/include
-Libs: -L/home/pmordel/ros/indigo/catkin_ws_flylab-gs/src/apriltag2/apriltag-2016-12-01/build/devel/lib 
-Requires: image_transport roscpp sensor_msgs geometry_msgs message_filters tf cv_bridge message_runtime nodelet std_msgs

@@ -1,8 +1,0 @@
-prefix=/usr/local
-
-Name: apriltag2
-Description: Description of apriltag2
-Version: 0.0.0
-Cflags: -I/usr/local/include
-Libs: -L/usr/local/lib 
-Requires: image_transport roscpp sensor_msgs geometry_msgs message_filters tf cv_bridge message_runtime nodelet std_msgs
