@@ -3,12 +3,12 @@
 //#include "boost\thread\mutex.hpp"
 // Include for the apriltags
 //#include "/apriltag2/apriltag.h"
-#include "apriltag/tag36h11.h"
-#include "apriltag/tag36h10.h"
-#include "apriltag/tag36artoolkit.h"
-#include "apriltag/tag25h9.h"
-#include "apriltag/tag25h7.h"
-#include "apriltag/tag16h5.h"
+#include <tag36h11.h>
+#include <tag36h10.h>
+#include <tag36artoolkit.h>
+#include <tag25h9.h>
+#include <tag25h7.h>
+#include <tag16h5.h>
 #include "apriltag2_example/AprilTagDetection.h"
 #include "apriltag2_example/AprilTagDetectionArray.h"
 

@@ -258,6 +258,7 @@ void apriltag_detector_add_family_bits(apriltag_detector_t *td, apriltag_family_
 // you want the largest value possible.
 static inline void apriltag_detector_add_family(apriltag_detector_t *td, apriltag_family_t *fam)
 {
+    printf("-->IN apriltag_detector_add_family \n");
     apriltag_detector_add_family_bits(td, fam, 2);
 }
 
