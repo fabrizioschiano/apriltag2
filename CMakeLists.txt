@@ -1,22 +1,22 @@
 # Author : Fabrizio SCHIANO
 
-## Last update : Pol MORDEL 10/04/17
+## Last update : Pol MORDEL 13/04/17
 # add_dependecies for apriltag2_exe and clean the file
 
 cmake_minimum_required(VERSION 2.8.3)
-project(apriltag2_example)
+project(apriltag2)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 
-set(APRILTAG2_EXAMPLE_SRC_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/src)
-set(APRILTAG2_EXAMPLE_INCLUDE_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/include)
+set(APRILTAG2_SRC_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set(APRILTAG2_INCLUDE_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(APRILTAG_DIR ${CMAKE_CURRENT_SOURCE_DIR}/apriltag-2016-12-01)
 set(APRILTAG_COMMON_DIR ${CMAKE_CURRENT_SOURCE_DIR}/apriltag-2016-12-01/common)
 
-message("-->APRILTAG2_EXAMPLE_SRC_FOLDER: ${APRILTAG2_EXAMPLE_SRC_FOLDER}")
-message("-->APRILTAG2_EXAMPLE_INCLUDE_FOLDER: ${APRILTAG2_EXAMPLE_INCLUDE_FOLDER}")
+message("-->APRILTAG2_SRC_FOLDER: ${APRILTAG2_SRC_FOLDER}")
+message("-->APRILTAG2_INCLUDE_FOLDER: ${APRILTAG2_INCLUDE_FOLDER}")
 
 # Get the information about this package's buildtime dependencies
 find_package(catkin REQUIRED COMPONENTS
@@ -91,7 +91,7 @@ include_directories(
     ${catkin_INCLUDE_DIRS}
     ${Boost_INCLUDE_DIRS}
     ${EIGEN3_INCLUDE_DIRS}
-    ${APRILTAG2_EXAMPLE_INCLUDE_FOLDER}
+    ${APRILTAG2_INCLUDE_FOLDER}
     ${APRILTAG_DIR}
     ${APRILTAG_COMMON_DIR}
     )
@@ -120,11 +120,11 @@ set (EXTRA_LIBS ${APRILTAG_LIBRARY} flycapture ${OpenCV_LIBS} ${VISP_LIBRARIES} 
 
 # Define executable apriltag2_exe using messages provided by this package.
 add_executable(apriltag2_exe
-    ${APRILTAG2_EXAMPLE_SRC_FOLDER}/apriltag2_pub_sub.cpp
-    ${APRILTAG2_EXAMPLE_SRC_FOLDER}/node.cpp
-    ${APRILTAG2_EXAMPLE_SRC_FOLDER}/node.h
-    ${APRILTAG2_EXAMPLE_SRC_FOLDER}/names.cpp
-    ${APRILTAG2_EXAMPLE_SRC_FOLDER}/names.h
+    ${APRILTAG2_SRC_FOLDER}/apriltag2_pub_sub.cpp
+    ${APRILTAG2_SRC_FOLDER}/node.cpp
+    ${APRILTAG2_SRC_FOLDER}/node.h
+    ${APRILTAG2_SRC_FOLDER}/names.cpp
+    ${APRILTAG2_SRC_FOLDER}/names.h
     )
 
 add_dependencies(apriltag2_exe ${${apriltag2_exe}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})

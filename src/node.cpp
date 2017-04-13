@@ -9,8 +9,8 @@
 #include <tag25h9.h>
 #include <tag25h7.h>
 #include <tag16h5.h>
-#include "apriltag2_example/AprilTagDetection.h"
-#include "apriltag2_example/AprilTagDetectionArray.h"
+#include "apriltag2/AprilTagDetection.h"
+#include "apriltag2/AprilTagDetectionArray.h"
 
 
 // Namespaces
@@ -145,8 +145,8 @@ namespace apriltag2_detector_ros
         message_filters::TimeSynchronizer<sensor_msgs::Image, sensor_msgs::CameraInfo> image_info_sync(raw_image_subscriber, camera_info_subscriber, queue_size_);
         image_info_sync.registerCallback(boost::bind(&Node::frameCallback,this, _1, _2));
         //    ros::Publisher chatter_pub = nh.advertise<std_msgs::String>("apriltag2_pose",1000);
-        ros::Publisher detections_pub_ = nh_.advertise<apriltag2_example::AprilTagDetectionArray>("apriltag2_tag_detections", 1000);
-        ros::Publisher detections_pub_1 = nh_.advertise<apriltag2_example::AprilTagDetection>("apriltag2_tag_detection1", 1000);
+        ros::Publisher detections_pub_ = nh_.advertise<apriltag2::AprilTagDetectionArray>("apriltag2_tag_detections", 1000);
+        ros::Publisher detections_pub_1 = nh_.advertise<apriltag2::AprilTagDetection>("apriltag2_tag_detection1", 1000);
         ros::Publisher poseStamped_pub_1 = nh_.advertise<geometry_msgs::PoseStamped>("apriltag2_ID1_poseStamped", 1000);
         ros::Rate loop_rate(100);
 
@@ -512,8 +512,8 @@ namespace apriltag2_detector_ros
 
                         // Try to get the position of the tag w.r.t. the camera
 
-                        apriltag2_example::AprilTagDetectionArray tag_detection_array;
-                        apriltag2_example::AprilTagDetection tag_detection1;
+                        apriltag2::AprilTagDetectionArray tag_detection_array;
+                        apriltag2::AprilTagDetection tag_detection1;
                         geometry_msgs::PoseStamped poseTag1;
                         geometry_msgs::PoseArray tag_pose_array;
                         //                tag_pose_array.header = cv_ptr->header;
@@ -544,7 +544,7 @@ namespace apriltag2_detector_ros
                         //                    tag_pose.pose.orientation.w = rot_quaternion.w();
                         tag_pose.header = cv_ptr->header;
 
-                        apriltag2_example::AprilTagDetection tag_detection;
+                        apriltag2::AprilTagDetection tag_detection;
 
                         tag_detection.pose = tag_pose;
                         //                    tag_detection.id = detection.id;

@@ -25,8 +25,8 @@
 #include <tag25h9.h>
 #include <tag25h7.h>
 #include <tag16h5.h>
-#include <apriltag2_example/AprilTagDetection.h>
-#include <apriltag2_example/AprilTagDetectionArray.h>
+#include <apriltag2/AprilTagDetection.h>
+#include <apriltag2/AprilTagDetectionArray.h>
 
 // Costum functions (test)
 //#include "userDefinedFunctions.h"

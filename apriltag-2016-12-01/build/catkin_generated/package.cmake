@@ -1,0 +1,7 @@
+set(_CATKIN_CURRENT_PACKAGE "apriltag2")
+set(apriltag2_MAINTAINER "fschiano <fschiano@todo.todo>")
+set(apriltag2_DEPRECATED "")
+set(apriltag2_VERSION "0.0.0")
+set(apriltag2_BUILD_DEPENDS "image_transport" "roscpp" "sensor_msgs" "geometry_msgs" "tf" "cv_bridge" "message_generation" "nodelet" "std_msgs" "cmake_modules" "message_filters")
+set(apriltag2_RUN_DEPENDS "apriltags" "image_transport" "roscpp" "sensor_msgs" "geometry_msgs" "tf" "cv_bridge" "message_runtime" "nodelet" "std_msgs" "message_filters")
+set(apriltag2_BUILDTOOL_DEPENDS "catkin")

@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/pmordel/ros/indigo/catkin_ws_flylab-gs/src/apriltag2/apriltag-2016-12-01/build/devel/setup.sh
