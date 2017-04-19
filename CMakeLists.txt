@@ -104,7 +104,7 @@ message("-->...done")
 
 
 set( CMAKE_BUILD_TYPE Release)
-set( CMAKE_BUILD_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/_build")
+set( CMAKE_BUILD_DIRECTORY "${APRILTAG_DIR}/build")
 
 find_library(FLYCAPTURE2 flycapture)
 
