@@ -1,12 +1,11 @@
 PREFIX ?= /usr/local
 
-#PREFIX_APRILTAG_EXAMPLE ?=/udd/pmordel/ros/indigo/catkin_src/apriltag2/apriltag2_example/lib
 
 CC = gcc
 AR = ar
 
-CFLAGS = -std=gnu99 -fPIC -Wall -Wno-unused-parameter -Wno-unused-function -I. -O4
-#CFLAGS += -I. -O4 -fno-strict-overflow
+CFLAGS = -std=gnu99 -fPIC -Wall -Wno-unused-parameter -Wno-unused-function
+CFLAGS += -I. -O4 -fno-strict-overflow
 
 APRILTAG_SRCS := $(wildcard *.c common/*.c)
 APRILTAG_HEADERS := $(wildcard *.h common/*.h)
@@ -22,7 +21,6 @@ all: $(TARGETS)
 install: libapriltag.so
 	#@chmod +x install.sh
 	@./install.sh $(PREFIX)/lib libapriltag.so #this should be the line that install the library
-	#@./install.sh $(PREFIX_APRILTAG_EXAMPLE) libapriltag.so
 	@./install.sh $(PREFIX)/include/apriltag $(APRILTAG_HEADERS)
 	@sed 's:^prefix=$$:prefix=$(PREFIX):' < apriltag.pc.in > apriltag.pc
 	@./install.sh $(PREFIX)/lib/pkgconfig apriltag.pc
