@@ -61,25 +61,33 @@ AprilTag is a visual fiducial system, useful for a wide variety of tasks includi
 INSTALL
 =======
 
-It is possible that in order to use our repository you will need to install some external libraries. A list of the needed external libraries will appear in this guide as soon as possible.
+**TODO:** It is possible that in order to use our repository you will need to install some external libraries. A list of the needed external libraries will appear in this guide as soon as possible.
+
+**TODO:** Soon a rosbag file will be uploaded with real images coming from a flight with 2 quadrotors with apriltags mounted on them.
+
+
 
 The default installation will place headers in /usr/local/include and
 shared library in /usr/local/lib. It also installs a pkg-config script
 into /usr/local/lib/pkgconfig.
 
-1. 
-```
-    $ git clone git@github.com:fabrizioschiano/apriltag2.git
-    $ cd apriltag-2016-12-01/ && mkdir build && ccmake ../../ && cd ..
-    $ pwd
-```
 
-2.
+**1.**
+
+`git clone git@github.com:fabrizioschiano/apriltag2.git`
+
+`cd apriltag-2016-12-01/ && mkdir build && ccmake ../../ && cd ..`
+
+`pwd`
+
+**2.**
+
 Copy the output of the `pwd` command and open another terminal and go to your catkin workspace by doing for example
 
 `cd catkin_ws`
 
-3. 
+**3.**
+
 go to the source folder of your catkin workspace by doing
 
 `cd src`
@@ -88,14 +96,28 @@ create a link to your package apriltag2 by doing
 
 `ln -s PASTE_HERE_WHAT_YOU_COPIED_AT_POINT_2`
 
-4. 
-Go back to the previous terminal in the folder  `apriltag-2016-12-01` and do
+**4.** 
+
+Go back one folder
+`cd..`
+
+and do 
+
+`catkin_make`
+
+**5.** 
+
+Go back to the previous terminal (the one of point 1) in the folder  `apriltag-2016-12-01` and do
+
 `make`
+
+and then
+
 `sudo make install`
 
 To install to a different directory than /usr/local:
 
-    $ PREFIX=/some/path sudo make install
+`PREFIX=/some/path sudo make install`
 
 
 USAGE
