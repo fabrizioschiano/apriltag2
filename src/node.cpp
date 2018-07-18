@@ -106,7 +106,7 @@ namespace apriltag2_detector_ros
         lastHeaderSeq_(0),
         first_time(false)
     {
-        cout<<"-->In Node() constructor"<<endl;
+        cout<<"-->In Node() constructor!!!CIAO"<<endl;
     }
 
     void Node::spin(int argc, char** argv)
@@ -358,15 +358,15 @@ namespace apriltag2_detector_ros
                     //                cout << zarray_size(detections) << " tags detected" << endl;
                     //                cout << "-----------------------" << endl;
                     // Draw detection outlines
-                    int counter_3 = 0;
+                    int counter_2 = 0;
                     int counter_4 = 0;
                     for (int i = 0; i < zarray_size(detections); i++) 
                     {
                         apriltag_detection_t *det;
                         zarray_get(detections, i, &det);
-                        if (det->id == 3) 
+                        if (det->id == 2)
                         {
-                            counter_3++;
+                            counter_2++;
                         }
                         else if(det->id == 4)
                         {
@@ -469,26 +469,26 @@ namespace apriltag2_detector_ros
 
                         stringstream stream;
                         stringstream stream_norm;
-                        if (det->id == 3) 
+                        if (det->id == 2)
                         {
-                            stream << setprecision(4) << "bearing_i"<<det->id << "_" << counter_3 <<  "=[ " << vectorRectified_body.at<float>(0) << "," << vectorRectified_body.at<float>(1) << "," << vectorRectified_body.at<float>(2) << " ]";
+                            stream << setprecision(4) << "bearing_i"<<det->id << "_" << counter_2 <<  "=[ " << vectorRectified_body.at<float>(0) << "," << vectorRectified_body.at<float>(1) << "," << vectorRectified_body.at<float>(2) << " ]";
                         } 
-                        else if(det->id == 4)
-                        {
-                            stream << setprecision(4) << "bearing_i"<<det->id << "_" << counter_4 <<  "=[ " << vectorRectified_body.at<float>(0) << "," << vectorRectified_body.at<float>(1) << "," << vectorRectified_body.at<float>(2) << " ]";
-                        }
+//                        else if(det->id == 4)
+//                        {
+//                            stream << setprecision(4) << "bearing_i"<<det->id << "_" << counter_4 <<  "=[ " << vectorRectified_body.at<float>(0) << "," << vectorRectified_body.at<float>(1) << "," << vectorRectified_body.at<float>(2) << " ]";
+//                        }
                         //                    stream_norm << setprecision(4) << "Norm Bearing: " <<  norm(vectorRectified);
 
                         string s = stream.str();
                         string s1 = stream_norm.str();
-                        if (det->id == 3) 
+                        if (det->id == 2)
                         {
-                            putText(frame,s,Point2f(25,700+30*(counter_3-1)), FONT_HERSHEY_PLAIN, 2,  Scalar(255,255,255));
+                            putText(frame,s,Point2f(25,700+30*(counter_2-1)), FONT_HERSHEY_PLAIN, 2,  Scalar(255,255,255));
                         } 
-                        else if(det->id == 4)
-                        {
-                            putText(frame,s,Point2f(25,100+30*(counter_4-1)), FONT_HERSHEY_PLAIN, 2,  Scalar(255,255,255));
-                        }
+//                        else if(det->id == 4)
+//                        {
+//                            putText(frame,s,Point2f(25,100+30*(counter_4-1)), FONT_HERSHEY_PLAIN, 2,  Scalar(255,255,255));
+//                        }
                         //    putText(frame,s1,Point2f(25,740), FONT_HERSHEY_PLAIN, 2,  Scalar(255,255,255));
                         // The following is what will be written on the image (in the tag)
                         stringstream ss;
