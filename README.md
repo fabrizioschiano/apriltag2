@@ -67,8 +67,31 @@ The default installation will place headers in /usr/local/include and
 shared library in /usr/local/lib. It also installs a pkg-config script
 into /usr/local/lib/pkgconfig.
 
-    $ make
-    $ sudo make install
+1. 
+```
+    $ git clone git@github.com:fabrizioschiano/apriltag2.git
+    $ cd apriltag-2016-12-01/ && mkdir build && ccmake ../../ && cd ..
+    $ pwd
+```
+
+2.
+Copy the output of the `pwd` command and open another terminal and go to your catkin workspace by doing for example
+
+`cd catkin_ws`
+
+3. 
+go to the source folder of your catkin workspace by doing
+
+`cd src`
+
+create a link to your package apriltag2 by doing 
+
+`ln -s PASTE_HERE_WHAT_YOU_COPIED_AT_POINT_2`
+
+4. 
+Go back to the previous terminal in the folder  `apriltag-2016-12-01` and do
+`make`
+`sudo make install`
 
 To install to a different directory than /usr/local:
 
