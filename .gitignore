@@ -2,7 +2,7 @@
 ###################
 opencvDemo
 *apriltag_demo
-
+apriltag-2016-12-01/build/
 
 
 *.stamp
@@ -119,3 +119,5 @@ local.properties
 
 # Code Recommenders
 .recommenders/
+
+
